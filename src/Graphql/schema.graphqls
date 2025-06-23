@@ -1,0 +1,88 @@
+
+directive @resolver(class: String!) on FIELD_DEFINITION
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  getIngredients(
+    input: PaginatedListInput!
+  ): IngredientList
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GetIngredients")
+}
+
+type Mutation {
+  echo: String
+}
+
+input PaginatedListInput {
+  filterGroups: [FilterGroupInput]
+  pageSize: Int!
+  currentPage: Int!
+  sort: [SortInput]
+}
+
+input SortInput {
+  field: String!
+  direction: SortDirection!
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+input FilterGroupInput {
+  filters: [FilterInput]
+  type: FilterGroupType
+}
+
+input FilterInput {
+  field: String!
+  condition: FilterCondition
+  value: String
+}
+
+enum FilterCondition {
+  EQ
+  LT
+  LTEQ
+  GT
+  GTEQ
+  IN
+  LIKE
+}
+
+enum FilterGroupType {
+  OR
+  AND
+}
+
+interface PaginatedListItem {
+  id: Int!
+  created_at: String!
+  updated_at: String!
+}
+
+interface PaginatedList {
+  pageSize: Int!
+  currentPage: Int!
+  totalPages: Int!
+  items: [PaginatedListItem]!
+}
+
+type IngredientList implements PaginatedList {
+  pageSize: Int!
+  currentPage: Int!
+  totalPages: Int!
+  items: [Ingredient]!
+}
+
+type Ingredient implements PaginatedListItem {
+  id: Int!
+  name: String
+  created_at: String!
+  updated_at: String!
+}

@@ -1,0 +1,24 @@
+{
+    "name": "jayankaghosh/nomnomplan",
+    "description": "A simple, smart way to organize your recipes and shopping in one place.",
+    "type": "project",
+    "require": {
+        "jayankaghosh/om": "^1.1",
+        "webonyx/graphql-php": "^15.20",
+        "symfony/error-handler": "^6.4",
+        "symfony/dotenv": "^6.4",
+        "catfan/medoo": "^2.2",
+        "symfony/console": "^6.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "JayankaGhosh\\NomNomPlan\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jayanka Ghosh",
+            "email": "joy@codilar.com"
+        }
+    ]
+}
