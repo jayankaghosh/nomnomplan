@@ -2,6 +2,7 @@
 
 namespace JayankaGhosh\NomNomPlan\Graphql\Resolver;
 
+
 use JayankaGhosh\NomNomPlan\Graphql\ResolverInterface;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
 

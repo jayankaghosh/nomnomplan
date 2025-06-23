@@ -1,6 +1,6 @@
 <?php
 /** @var array $data */
-$verificationLink = sprintf('%s/admin/user/setpassword/token/%s', $_ENV['BASE_URL'], $data['email_verification_token']);
+$verificationLink = sprintf('%s/admin/user/setpassword?token=%s', $_ENV['BASE_URL'], $data['email_verification_token']);
 ?>
 <p>Hello <?= htmlspecialchars($data['name']) ?>,</p>
 

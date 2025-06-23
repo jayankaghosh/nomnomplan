@@ -3,8 +3,9 @@
 namespace JayankaGhosh\NomNomPlan\Exception;
 
 use GraphQL\Error\ClientAware;
+use GraphQL\Error\Error;
 
-class ApplicationException extends InternalApplicationException implements ClientAware
+class ApplicationException extends Error implements ClientAware
 {
 
     const CATEGORY = 'application';
@@ -17,8 +18,15 @@ class ApplicationException extends InternalApplicationException implements Clien
         return true;
     }
 
+    public function getExtensions(): array
+    {
+        return [
+            'category' => $this->getCategory()
+        ];
+    }
+
     public function getCategory(): string
     {
-        return self::CATEGORY;
+        return static::CATEGORY;
     }
 }
