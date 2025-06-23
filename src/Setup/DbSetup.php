@@ -18,9 +18,95 @@ class DbSetup implements NonInterceptableInterface
     public function run(): void
     {
         $connection = $this->db->getConnection();
+        $this->createUserTable($connection);
+        $this->createAdminUserTable($connection);
         $this->createIngredientTable($connection);
         $this->createRecipeTable($connection);
         $this->createIngredientRecipeMapTable($connection);
+    }
+
+    private function createUserTable(Medoo $connection): void
+    {
+        $connection->create('user', [
+            "id" => [
+                "INT",
+                "NOT NULL",
+                "AUTO_INCREMENT",
+                "PRIMARY KEY"
+            ],
+            "name" => [
+                "VARCHAR(300)",
+                "NOT NULL"
+            ],
+            "email" => [
+                "VARCHAR(300)",
+                "NOT NULL",
+                "UNIQUE"
+            ],
+            "phone" => [
+                "VARCHAR(20)",
+                "NOT NULL",
+                "UNIQUE"
+            ],
+            "password_hash" => [
+                "VARCHAR(300)",
+                "NOT NULL"
+            ],
+            "created_at" => [
+                "DATETIME",
+                "NOT NULL",
+                "DEFAULT CURRENT_TIMESTAMP"
+            ],
+            "updated_at" => [
+                "DATETIME",
+                "NOT NULL",
+                "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+            ]
+        ]);
+    }
+
+    private function createAdminUserTable(Medoo $connection): void
+    {
+        $connection->create('admin_user', [
+            "id" => [
+                "INT",
+                "NOT NULL",
+                "AUTO_INCREMENT",
+                "PRIMARY KEY"
+            ],
+            "name" => [
+                "VARCHAR(300)",
+                "NOT NULL"
+            ],
+            "email" => [
+                "VARCHAR(300)",
+                "NOT NULL",
+                "UNIQUE"
+            ],
+            "password_hash" => [
+                "VARCHAR(300)",
+                "NOT NULL"
+            ],
+            "email_verification_token" => [
+                "VARCHAR(300)",
+                "NOT NULL"
+            ],
+            "is_email_verified" => [
+                "TINYINT(1)",
+                "NOT NULL",
+                "DEFAULT 0"
+            ],
+            "created_at" => [
+                "DATETIME",
+                "NOT NULL",
+                "DEFAULT CURRENT_TIMESTAMP"
+            ],
+            "updated_at" => [
+                "DATETIME",
+                "NOT NULL",
+                "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+            ]
+        ]);
     }
 
     private function createIngredientTable(Medoo $connection): void
@@ -41,6 +127,10 @@ class DbSetup implements NonInterceptableInterface
                 "TINYINT(1)",
                 "NOT NULL",
                 "DEFAULT 0"
+            ],
+            "qty_unit" => [
+                "VARCHAR(50)",
+                "NOT NULL"
             ],
             "created_at" => [
                 "DATETIME",
@@ -105,10 +195,6 @@ class DbSetup implements NonInterceptableInterface
                 "DECIMAL(10,2)",
                 "NOT NULL",
                 "DEFAULT 0.00"
-            ],
-            "ingredient_qty_unit" => [
-                "VARCHAR(50)",
-                "NOT NULL"
             ],
             "created_at" => [
                 "DATETIME",

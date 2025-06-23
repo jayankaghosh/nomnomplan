@@ -1,5 +1,10 @@
 .idea
 .env
-vendor
 generated/*
 !generated/.gitkeep
+assets/*
+!assets/.gitkeep
+vendor/*
+!vendor/.gitkeep
+src/frontend/node_modules
+src/frontend/build

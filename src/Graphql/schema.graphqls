@@ -7,10 +7,17 @@ schema {
 }
 
 type Query {
+  """Get a paginated list of ingredients"""
   getIngredients(
     input: PaginatedListInput!
   ): IngredientList
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GetIngredients")
+
+  """Get a paginated list of recipes"""
+  getRecipes(
+    input: PaginatedListInput!
+  ): RecipeList
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GetRecipes")
 }
 
 type Mutation {
@@ -83,6 +90,33 @@ type IngredientList implements PaginatedList {
 type Ingredient implements PaginatedListItem {
   id: Int!
   name: String
+  is_veg: String
+  qty_unit: String
+  created_at: String!
+  updated_at: String!
+}
+
+type RecipeList implements PaginatedList {
+  pageSize: Int!
+  currentPage: Int!
+  totalPages: Int!
+  items: [Recipe]!
+}
+
+type Recipe implements PaginatedListItem {
+  id: Int!
+  name: String
+  ingredients: [RecipeIngredient]
+  created_at: String!
+  updated_at: String!
+}
+
+type RecipeIngredient implements PaginatedListItem {
+  id: Int!
+  name: String
+  is_veg: String
+  qty_unit: String
+  qty: Float
   created_at: String!
   updated_at: String!
 }

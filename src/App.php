@@ -36,7 +36,7 @@ class App
         if (php_sapi_name() === 'cli') {
             $this->cli->run();
         } else {
-            $requestUri = trim($_SERVER['REQUEST_URI'] ?? '', '/');
+            $requestUri = trim(strtok($_SERVER['REQUEST_URI'] ?? '', '?'), '/');
             if ($requestUri === 'graphql') {
                 $this->graphql->run();
             } else {

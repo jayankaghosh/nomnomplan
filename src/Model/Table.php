@@ -38,6 +38,18 @@ class Table
         return $this->db->getConnection()->count(...$args);
     }
 
+    public function load($field, $value): ?array
+    {
+        return $this->db->getConnection()->get($this->tableName, "*", [
+            $field => $value
+        ]);
+    }
+
+    public function insert(array $data)
+    {
+        return $this->db->getConnection()->insert($this->tableName, $data);
+    }
+
     private function processSelectArgs($where, $columns, $join): array
     {
         $args = [
@@ -46,7 +58,7 @@ class Table
             $where
         ];
         if ($join) {
-            array_splice($args, 1, 0, $join);
+            array_splice($args, 1, 0, [$join]);
         }
         return $args;
     }

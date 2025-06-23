@@ -12,7 +12,7 @@ abstract class PaginatedList implements ResolverInterface
     abstract protected function prepareItem(array $item): array;
 
     public function __construct(
-        private TableFactory $tableFactory
+        protected TableFactory $tableFactory
     )
     {
     }

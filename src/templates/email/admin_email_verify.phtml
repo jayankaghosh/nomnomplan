@@ -1,0 +1,19 @@
+<?php
+/** @var array $data */
+$verificationLink = sprintf('%s/admin/user/setpassword/token/%s', $_ENV['BASE_URL'], $data['email_verification_token']);
+?>
+<p>Hello <?= htmlspecialchars($data['name']) ?>,</p>
+
+<p>Your admin account has been created by the super admin.</p>
+
+<p>Please click the link below to verify your email and set your password:</p>
+
+<p>
+    <a href="<?= htmlspecialchars($verificationLink) ?>" target="_blank">
+        <?= htmlspecialchars($verificationLink) ?>
+    </a>
+</p>
+
+<p>If you did not expect this email, you can safely ignore it.</p>
+
+<p>Regards,<br>NomNomPlan Team</p>
