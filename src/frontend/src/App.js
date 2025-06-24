@@ -17,6 +17,29 @@ function App() {
         createTheme({
             palette: {
                 mode: themeMode,
+                ...(themeMode === 'light'
+                    ? {
+                        primary: {
+                            main: '#1976d2',
+                            dark: '#115293',
+                            contrastText: '#fff',
+                        },
+                        background: {
+                            default: '#f5f5f5',
+                            paper: '#fff',
+                        },
+                    }
+                    : {
+                        primary: {
+                            main: '#1e1e2f',
+                            dark: '#151524',
+                            contrastText: '#fff',
+                        },
+                        background: {
+                            default: '#121212',
+                            paper: '#1e1e1e',
+                        },
+                    }),
             },
         }),
         [themeMode]

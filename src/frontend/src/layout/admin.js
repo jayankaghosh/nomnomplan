@@ -75,7 +75,6 @@ const AdminLayout = ({ title, children }) => {
                 sx={{
                     flexGrow: 1,
                     p: 3,
-                    ml: drawerOpen ? `${drawerWidth}px` : `${collapsedWidth}px`,
                     transition: 'margin 0.3s',
                 }}
             >

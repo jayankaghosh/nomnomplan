@@ -24,5 +24,5 @@ export const getQueryParams = (url) => {
 export const getURI = (url) => {
     if (!url) url = getCurrentUrl();
     const { pathname, search, hash } = new URL(url);
-    return `${pathname}${search}${hash}`;
+    return `${pathname}`;
 };
