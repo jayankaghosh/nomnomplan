@@ -23,7 +23,7 @@ class Graphql implements AppInterface
         $rootValue = [];
         $appContext = $this->getContext();
         foreach ($documentNode->definitions as $def) {
-            if ($def->kind === 'ObjectTypeDefinition' && $def->name->value === 'Query') {
+            if ($def->kind === 'ObjectTypeDefinition' && in_array($def->name->value, ['Query', 'Mutation'])) {
                 foreach ($def->fields as $field) {
                     $fieldName = $field->name->value;
                     foreach ($field->directives as $directive) {
@@ -51,7 +51,12 @@ class Graphql implements AppInterface
         }
 
         $input = json_decode(file_get_contents('php://input'), true);
-        $result = \GraphQL\GraphQL::executeQuery($schema, $input['query'] ?? '', $rootValue);
+        $result = \GraphQL\GraphQL::executeQuery(
+            $schema,
+            $input['query'] ?? '',
+            $rootValue, null,
+            $input['variables'] ?? []
+        );
         $output = $result->toArray(DebugFlag::INCLUDE_DEBUG_MESSAGE);
         header('Content-Type: application/json');
         echo \json_encode($output);

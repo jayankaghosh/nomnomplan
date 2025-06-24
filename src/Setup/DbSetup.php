@@ -23,6 +23,51 @@ class DbSetup implements NonInterceptableInterface
         $this->createIngredientTable($connection);
         $this->createRecipeTable($connection);
         $this->createIngredientRecipeMapTable($connection);
+        $this->createAdminAccessTokenTable($connection);
+    }
+
+    private function createAdminAccessTokenTable(Medoo $connection): void
+    {
+        $table = 'admin_token';
+        $tableExists = $this->db->tableExists($table);
+        $connection->create($table, [
+            "id" => [
+                "INT",
+                "NOT NULL",
+                "AUTO_INCREMENT",
+                "PRIMARY KEY"
+            ],
+            "admin_id" => [
+                "INT",
+                "NOT NULL"
+            ],
+            "token" => [
+                "VARCHAR(100)",
+                "NOT NULL",
+                "UNIQUE"
+            ],
+            "created_at" => [
+                "DATETIME",
+                "NOT NULL",
+                "DEFAULT CURRENT_TIMESTAMP"
+            ],
+            "updated_at" => [
+                "DATETIME",
+                "NOT NULL",
+                "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+            ]
+        ], [
+            "ENGINE" => "InnoDB"
+        ]);
+
+        if (!$tableExists) {
+            $connection->query("
+            ALTER TABLE $table
+            ADD CONSTRAINT fk_token_admin_token_admin_id
+                FOREIGN KEY (admin_id) REFERENCES admin_user(id)
+                ON DELETE CASCADE
+        ");
+        }
     }
 
     private function createUserTable(Medoo $connection): void

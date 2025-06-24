@@ -45,9 +45,14 @@ class Table
         ]);
     }
 
-    public function insert(array $data)
+    public function insert(array $data): ?\PDOStatement
     {
-        return $this->db->getConnection()->insert($this->tableName, $data);
+        $existingItem = isset($data['id']) ? $this->load('id', $data['id']): null;
+        if ($existingItem) {
+            return $this->db->getConnection()->update($this->tableName, $data, ['id' => $data['id']]);
+        } else {
+            return $this->db->getConnection()->insert($this->tableName, $data);
+        }
     }
 
     private function processSelectArgs($where, $columns, $join): array

@@ -9,7 +9,8 @@
         "symfony/dotenv": "^6.4",
         "catfan/medoo": "^2.2",
         "symfony/console": "^6.4",
-        "phpmailer/phpmailer": "^6.10"
+        "phpmailer/phpmailer": "^6.10",
+        "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {

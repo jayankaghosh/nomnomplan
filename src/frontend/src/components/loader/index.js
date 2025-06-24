@@ -1,7 +1,7 @@
 import {Box} from "@mui/material";
 
-const Loader = ({isActive}) => {
-    if (!isActive) return null;
+const Loader = ({isLoading}) => {
+    if (!isLoading) return null;
 
     return (
         <Box

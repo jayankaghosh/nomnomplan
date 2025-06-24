@@ -54,7 +54,14 @@ class AdminUserCreate extends Command implements NonInterceptableInterface
             throw new DuplicateDataException(sprintf('Admin user with email "%s" already exists', $data['email']));
         }
         try {
-            $data['email_verification_token'] = md5(bin2hex(random_bytes(32)));
+            $emailVerificationToken = null;
+            while (!$emailVerificationToken) {
+                $emailVerificationToken = md5(bin2hex(random_bytes(32)));
+                if ($table->load('email_verification_token', $emailVerificationToken)) {
+                    $emailVerificationToken = null;
+                }
+            }
+            $data['email_verification_token'] = $emailVerificationToken;
         } catch (\Throwable) {
             throw new InternalApplicationException('Could not generate token');
         }

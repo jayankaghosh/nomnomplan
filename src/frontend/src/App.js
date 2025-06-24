@@ -23,7 +23,10 @@ function App() {
     );
     return (
         <div className="App">
-            <ToastContainer />
+            <ToastContainer
+                position={'bottom-right'}
+                theme={'dark'}
+            />
             <ThemeProvider theme={theme}>
                 <BrowserRouter>
                     <AppRouter />

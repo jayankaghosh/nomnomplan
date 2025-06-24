@@ -18,10 +18,37 @@ type Query {
     input: PaginatedListInput!
   ): RecipeList
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GetRecipes")
+
+  """Get a paginated list of recipes"""
+  isAdminPasswordTokenValid(
+    token: String!
+  ): GenericResponse
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\IsAdminPasswordTokenValid")
+
 }
 
 type Mutation {
-  echo: String
+  """Set the admin password with the help of a token"""
+  adminUserSetPassword(
+    token: String!
+    password: String!
+  ): GenericResponse
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminUserSetPassword")
+
+  generateAdminToken(
+    username: String!
+    password: String!
+  ): Token
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GenerateAdminToken")
+}
+
+type Token {
+  token: String!
+}
+
+type GenericResponse {
+  status: Boolean!
+  message: String!
 }
 
 input PaginatedListInput {
@@ -53,7 +80,9 @@ input FilterInput {
 }
 
 enum FilterCondition {
+  """Equal"""
   EQ
+  """Less than"""
   LT
   LTEQ
   GT
