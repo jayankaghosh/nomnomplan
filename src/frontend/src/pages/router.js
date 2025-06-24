@@ -7,7 +7,16 @@ import AdminLogin from 'pages/admin-login';
 import AdminDashboard from 'pages/admin-dashboard';
 import AdminIngredients from 'pages/admin-ingredients';
 import AdminNoRoute from 'pages/admin-noroute';
-import {ADMIN_DASHBOARD, ADMIN_INGREDIENTS, ADMIN_LOGIN, ADMIN_SET_PASSWORD, HOME, LOGIN} from "pages/routes.config";
+import AdminRecipes from "pages/admin-recipes";
+import {
+    ADMIN_DASHBOARD,
+    ADMIN_INGREDIENTS,
+    ADMIN_LOGIN,
+    ADMIN_RECIPES,
+    ADMIN_SET_PASSWORD,
+    HOME,
+    LOGIN
+} from "pages/routes.config";
 
 const AppRouter = () => {
     return (
@@ -18,6 +27,7 @@ const AppRouter = () => {
             <Route path={ADMIN_SET_PASSWORD} Component={AdminSetPassword} />
             <Route path={ADMIN_DASHBOARD} Component={AdminDashboard} />
             <Route path={ADMIN_INGREDIENTS} Component={AdminIngredients} />
+            <Route path={ADMIN_RECIPES} Component={AdminRecipes} />
             <Route path={`${ADMIN_DASHBOARD}/*`} Component={AdminNoRoute} />
             <Route path="*" Component={NoRoute} />
         </Routes>

@@ -31,3 +31,52 @@ export const getGenerateAdminTokenQuery = () => {
         }
     `;
 }
+
+export const getIngredientListQuery = () => {
+    return `
+        query ($input: PaginatedListInput!) {
+          getIngredients(input: $input) {
+            currentPage
+            pageSize
+            totalPages
+            totalCount
+            items {
+              id
+              name
+              is_veg
+              qty_unit
+              created_at
+              updated_at
+            }
+          }
+        }    
+    `;
+}
+
+export const getRecipeListQuery = () => {
+    return `
+        query ($input: PaginatedListInput!) {
+          getRecipes(input: $input) {
+            currentPage
+            pageSize
+            totalPages
+            totalCount
+            items {
+              id
+              name
+              ingredients {
+                id
+                name
+                is_veg
+                qty_unit
+                qty
+                created_at
+                updated_at
+              }
+              created_at
+              updated_at
+            }
+          }
+        }    
+    `;
+}

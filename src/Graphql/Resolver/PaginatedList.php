@@ -81,6 +81,7 @@ abstract class PaginatedList implements ResolverInterface
             'pageSize' => $pageSize,
             'currentPage' => $currentPage,
             'totalPages' => ceil($totalItems / $pageSize),
+            'totalCount' => $totalItems,
             'items' => $items
         ];
     }

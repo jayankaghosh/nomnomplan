@@ -1,18 +1,26 @@
 import {List, ListItem, ListItemText} from "@mui/material";
 import {useState} from "react";
-import {Link} from "react-router-dom";
-import {ADMIN_DASHBOARD} from "pages/routes.config";
+import {Link, useNavigate} from "react-router-dom";
+import {ADMIN_DASHBOARD, ADMIN_INGREDIENTS, ADMIN_LOGIN, ADMIN_RECIPES} from "pages/routes.config";
 import {getURI} from "util/url";
-
-const menuItems = [
-    { label: 'Dashboard', action: ADMIN_DASHBOARD },
-    { label: 'Ingredients', action: '/admin/ingredients' },
-    { label: 'Recipes', action: '/admin/recipes' },
-    { label: 'Logout', action: () => {  } },
-];
-
+import {setAdminToken} from "util/auth";
 
 const AdminMenu = ({ drawerOpen }) => {
+
+    const navigate = useNavigate();
+
+    const doLogout = () => {
+        setAdminToken(null);
+        navigate(ADMIN_LOGIN);
+    }
+
+    const menuItems = [
+        { label: 'Dashboard', action: ADMIN_DASHBOARD },
+        { label: 'Ingredients', action: ADMIN_INGREDIENTS },
+        { label: 'Recipes', action: ADMIN_RECIPES },
+        { label: 'Logout', action: doLogout },
+    ];
+
     const currentUrl = getURI();
 
     return (

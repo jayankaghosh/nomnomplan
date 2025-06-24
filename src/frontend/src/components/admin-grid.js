@@ -8,201 +8,90 @@ import {
     TableRow,
     Paper,
     Typography,
-    TablePagination
+    TablePagination,
+    TableSortLabel
 } from '@mui/material';
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
+import Loader from "components/loader";
+import {fetchData} from "util/api";
+import {toast} from "react-toastify";
 
-const AdminGrid = ({ title = 'Grid' }) => {
-    const data = {
-        "currentPage": 1,
-        "pageSize": 10,
-        "totalPages": 31,
-        "items": [
-            {
-                "name": "Chicken",
-                "is_veg": "0",
-                "qty_unit": "Kgs",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Egg",
-                "is_veg": "0",
-                "qty_unit": "Pieces",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Potato",
-                "is_veg": "1",
-                "qty_unit": "Kgs",
-                "created_at": "2025-06-23 08:39:17"
-            },
-            {
-                "name": "Tomato",
-                "is_veg": "1",
-                "qty_unit": "Kgs",
-                "created_at": "2025-06-23 08:39:17"
+const AdminGrid = ({
+   title = 'Grid',
+   query,
+   queryName,
+   initialPage = 1,
+   initialPageSize = 10,
+   initialSortField = 'id',
+   initialSortDirection = 'asc',
+   rowsPerPageOptions = [2, 5, 10, 20, 50],
+   columns = [],
+   rowMutator = null,
+   columnRenderers = {}
+}) => {
+    const [data, setData] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [page, setPage] = useState(initialPage);
+    const [rowsPerPage, setRowsPerPage] = useState(initialPageSize);
+    const [sortField, setSortField] = useState(initialSortField);
+    const [sortDirection, setSortDirection] = useState(initialSortDirection);
+
+    useEffect(() => {
+        const execute = async () => {
+            try {
+                setIsLoading(true);
+                const variables = {
+                    input: {
+                        filterGroups: [],
+                        pageSize: rowsPerPage,
+                        currentPage: page,
+                        sort: [
+                            {
+                                field: sortField,
+                                direction: sortDirection.toUpperCase()
+                            }
+                        ]
+                    }
+                }
+                const { [queryName]: response } = await fetchData(query, variables);
+                setData(response);
+            } catch ({ message }) {
+                toast.error(message);
+            } finally {
+                setIsLoading(false);
             }
-        ]
-    };
-
-    const { currentPage, pageSize, totalPages, items } = data;
-    const totalCount = totalPages * pageSize;
-
-    const [page, setPage] = useState(currentPage - 1); // MUI uses 0-based index
-    const [rowsPerPage, setRowsPerPage] = useState(pageSize);
+        }
+        execute();
+    }, [
+        page,
+        rowsPerPage,
+        sortField,
+        sortDirection
+    ]);
 
     const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-        // 🔁 Optionally call API here with newPage
+        setPage(newPage + 1);
     };
 
     const handleChangeRowsPerPage = (event) => {
         const newSize = parseInt(event.target.value, 10);
         setRowsPerPage(newSize);
-        setPage(0);
-        // 🔁 Optionally call API here with newSize
+        setPage(1);
     };
+
+    const handleSort = (property) => {
+        const isAsc = sortField === property && sortDirection === 'asc';
+        setSortDirection(isAsc ? 'desc' : 'asc');
+        setSortField(property);
+    };
+
+    if (!data) {
+        return <Loader isLoading={true} />;
+    }
 
     return (
         <Box>
+            <Loader isLoading={isLoading} />
             <Typography variant="h4" gutterBottom>
                 { title }
             </Typography>
@@ -211,32 +100,62 @@ const AdminGrid = ({ title = 'Grid' }) => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Is Veg</TableCell>
-                            <TableCell>Unit</TableCell>
-                            <TableCell>Created At</TableCell>
+                            {
+                                columns.map(column => {
+                                    return (
+                                        <TableCell
+                                            key={column}
+                                            sortDirection={sortField === column ? sortDirection : false}
+                                        >
+                                            <TableSortLabel
+                                                active={sortField === column}
+                                                direction={sortField === column ? sortDirection : 'asc'}
+                                                onClick={() => handleSort(column)}
+                                            >
+                                                { column.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) }
+                                            </TableSortLabel>
+                                        </TableCell>
+                                    )
+                                })
+                            }
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {items.map((row, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{row.name}</TableCell>
-                                <TableCell>{row.is_veg === '1' ? 'Yes' : 'No'}</TableCell>
-                                <TableCell>{row.qty_unit}</TableCell>
-                                <TableCell>{row.created_at}</TableCell>
-                            </TableRow>
-                        ))}
+                        {
+                            data.items.map((row, index) => {
+                                if (typeof rowMutator === 'function') {
+                                    row = rowMutator(row);
+                                }
+                                return (
+                                    <TableRow key={index}>
+                                        {
+                                            columns.map(column => {
+                                                let renderer = columnRenderers[column];
+                                                if (!renderer) {
+                                                    renderer = (value) => <>{value}</>;
+                                                }
+                                                return (
+                                                    <TableCell key={column}>
+                                                        { renderer(row[column]) }
+                                                    </TableCell>
+                                                )
+                                            })
+                                        }
+                                    </TableRow>
+                                )
+                            })
+                        }
                     </TableBody>
                 </Table>
             </TableContainer>
 
             <TablePagination
                 component="div"
-                count={totalCount}
-                page={page}
+                count={data.totalCount}
+                page={page - 1}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
-                rowsPerPageOptions={[5, 10, 20, 50]}
+                rowsPerPageOptions={rowsPerPageOptions}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
         </Box>
