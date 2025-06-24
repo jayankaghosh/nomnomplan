@@ -11,6 +11,7 @@ const AdminIngredients = props => {
     useAdminGuard();
 
     const rowMutator = row => {
+        row.is_veg = row.is_veg === '1' ? 'Yes' : 'No';
         row.created_at = dayjs(row.created_at).fromNow();
         row.updated_at = dayjs(row.updated_at).fromNow();
         return row;

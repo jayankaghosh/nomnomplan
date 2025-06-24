@@ -7,7 +7,7 @@ const AdminDashboard = props => {
 
     return (
         <AdminLayout>
-            <h1>Hi</h1>
+            <h1>Hi Indu :)</h1>
         </AdminLayout>
     );
 }
