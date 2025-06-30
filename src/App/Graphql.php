@@ -5,13 +5,22 @@ namespace JayankaGhosh\NomNomPlan\App;
 use GraphQL\Error\DebugFlag;
 use GraphQL\Utils\BuildSchema;
 use GraphQL\Language\Parser;
+use JayankaGhosh\NomNomPlan\Exception\AuthenticationException;
+use JayankaGhosh\NomNomPlan\Graphql\AdminResolverInterface;
 use JayankaGhosh\NomNomPlan\Graphql\ResolverInterface;
+use JayankaGhosh\NomNomPlan\Model\TableFactory;
 use Om\ObjectManager\ObjectManager;
 
 class Graphql implements AppInterface
 {
 
     const SCHEMA_PATH = __DIR__ . '/../Graphql/schema.graphqls';
+
+    public function __construct(
+        private readonly TableFactory $tableFactory
+    )
+    {
+    }
 
     public function run()
     {
@@ -45,7 +54,8 @@ class Graphql implements AppInterface
                     global $objectManager;
                     /** @var ResolverInterface $resolverClassInstance */
                     $resolverClassInstance = $objectManager->create($className);
-                    return $resolverClassInstance->resolve($args, [...($context ?? []), ...$appContext]);
+                    $this->validateResolver($resolverClassInstance);
+                    return $resolverClassInstance->resolve($args, [...($context ?? []), ...$appContext], $root, $info);
                 };
             }
         }
@@ -54,7 +64,8 @@ class Graphql implements AppInterface
         $result = \GraphQL\GraphQL::executeQuery(
             $schema,
             $input['query'] ?? '',
-            $rootValue, null,
+            $rootValue,
+            null,
             $input['variables'] ?? []
         );
         $output = $result->toArray(DebugFlag::INCLUDE_DEBUG_MESSAGE);
@@ -66,5 +77,16 @@ class Graphql implements AppInterface
     protected function getContext(): array
     {
         return [];
+    }
+
+    protected function validateResolver(ResolverInterface $resolver): void
+    {
+        if ($resolver instanceof AdminResolverInterface) {
+            $adminTokenTable = $this->tableFactory->create(['tableName' => 'admin_token']);
+            $adminToken = getallheaders()['Admin-Token'] ?? null;
+            if (!$adminTokenTable->load('token', $adminToken)) {
+                throw new AuthenticationException('Authentication error');
+            }
+        }
     }
 }

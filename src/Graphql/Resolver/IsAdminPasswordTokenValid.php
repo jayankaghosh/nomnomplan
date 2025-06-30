@@ -2,10 +2,11 @@
 
 namespace JayankaGhosh\NomNomPlan\Graphql\Resolver;
 
-use JayankaGhosh\NomNomPlan\Graphql\ResolverInterface;
+use GraphQL\Type\Definition\ResolveInfo;
+use JayankaGhosh\NomNomPlan\Graphql\AdminResolverInterface;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
 
-class IsAdminPasswordTokenValid implements ResolverInterface
+class IsAdminPasswordTokenValid implements AdminResolverInterface
 {
 
     public function __construct(
@@ -14,7 +15,12 @@ class IsAdminPasswordTokenValid implements ResolverInterface
     {
     }
 
-    public function resolve(array $args, array $context): array
+    public function resolve(
+        array $args,
+        array $context,
+        array $root,
+        ResolveInfo $info
+    ): array
     {
         $token = $args['token'] ?? '';
         $table = $this->tableFactory->create(['tableName' => 'admin_user']);

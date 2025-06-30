@@ -38,7 +38,7 @@ const AdminRecipes = props => {
             <AdminGrid
                 title={'Recipe List'}
                 query={getRecipeListQuery()}
-                queryName={'getRecipes'}
+                queryName={'adminGetRecipes'}
                 columns={['id', 'name', 'ingredients', 'created_at', 'updated_at']}
                 rowMutator={ rowMutator }
                 columnRenderers={{ ingredients: ingredientsRenderer }}

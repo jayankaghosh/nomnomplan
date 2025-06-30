@@ -2,12 +2,13 @@
 
 namespace JayankaGhosh\NomNomPlan\Graphql\Resolver;
 
+use GraphQL\Type\Definition\ResolveInfo;
 use JayankaGhosh\NomNomPlan\Exception\AuthenticationException;
-use JayankaGhosh\NomNomPlan\Graphql\ResolverInterface;
+use JayankaGhosh\NomNomPlan\Graphql\AdminResolverInterface;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
 use JayankaGhosh\NomNomPlan\Util\Encryption;
 
-class GenerateAdminToken implements ResolverInterface
+class GenerateAdminToken implements AdminResolverInterface
 {
 
     public function __construct(
@@ -17,7 +18,12 @@ class GenerateAdminToken implements ResolverInterface
     {
     }
 
-    public function resolve(array $args, array $context): array
+    public function resolve(
+        array $args,
+        array $context,
+        array $root,
+        ResolveInfo $info
+    ): array
     {
         $username = $args['username'] ?? null;
         $password = $args['password'] ?? null;

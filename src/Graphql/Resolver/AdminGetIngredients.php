@@ -2,9 +2,9 @@
 
 namespace JayankaGhosh\NomNomPlan\Graphql\Resolver;
 
-use JayankaGhosh\NomNomPlan\Graphql\ResolverInterface;
+use JayankaGhosh\NomNomPlan\Graphql\AdminResolverInterface;
 
-class GetIngredients extends PaginatedList
+class AdminGetIngredients extends PaginatedList implements AdminResolverInterface
 {
 
     protected function getTable(): string

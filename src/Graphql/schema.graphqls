@@ -8,16 +8,16 @@ schema {
 
 type Query {
   """Get a paginated list of ingredients"""
-  getIngredients(
+  adminGetIngredients(
     input: PaginatedListInput!
   ): IngredientList
-  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GetIngredients")
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminGetIngredients")
 
   """Get a paginated list of recipes"""
-  getRecipes(
+  adminGetRecipes(
     input: PaginatedListInput!
   ): RecipeList
-  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GetRecipes")
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminGetRecipes")
 
   """Get a paginated list of recipes"""
   isAdminPasswordTokenValid(
@@ -40,6 +40,32 @@ type Mutation {
     password: String!
   ): Token
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GenerateAdminToken")
+
+  adminInsertIngredient(
+    input: IngredientInput!
+  ): Query
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminInsertIngredient")
+
+  adminInsertRecipe(
+    input: RecipeInput!
+  ): Query
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminInsertRecipe")
+}
+
+input IngredientInput {
+  name: String!
+  is_veg: Boolean!
+  qty_unit: String!
+}
+
+input RecipeInput {
+  name: String!
+  ingredients: [RecipeIngredientInput]!
+}
+
+input RecipeIngredientInput {
+  id: Int!
+  qty: Float!
 }
 
 type Token {

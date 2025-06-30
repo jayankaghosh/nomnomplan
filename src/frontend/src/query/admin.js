@@ -35,7 +35,7 @@ export const getGenerateAdminTokenQuery = () => {
 export const getIngredientListQuery = () => {
     return `
         query ($input: PaginatedListInput!) {
-          getIngredients(input: $input) {
+          adminGetIngredients(input: $input) {
             currentPage
             pageSize
             totalPages
@@ -56,7 +56,7 @@ export const getIngredientListQuery = () => {
 export const getRecipeListQuery = () => {
     return `
         query ($input: PaginatedListInput!) {
-          getRecipes(input: $input) {
+          adminGetRecipes(input: $input) {
             currentPage
             pageSize
             totalPages

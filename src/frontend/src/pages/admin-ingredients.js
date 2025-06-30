@@ -22,7 +22,7 @@ const AdminIngredients = props => {
             <AdminGrid
                 title={'Ingredient List'}
                 query={getIngredientListQuery()}
-                queryName={'getIngredients'}
+                queryName={'adminGetIngredients'}
                 columns={['id', 'name', 'is_veg', 'qty_unit', 'created_at', 'updated_at']}
                 rowMutator={ rowMutator }
             />

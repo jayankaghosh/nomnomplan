@@ -3,6 +3,7 @@
 namespace JayankaGhosh\NomNomPlan\Graphql\Resolver;
 
 
+use GraphQL\Type\Definition\ResolveInfo;
 use JayankaGhosh\NomNomPlan\Graphql\ResolverInterface;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
 
@@ -18,7 +19,12 @@ abstract class PaginatedList implements ResolverInterface
     {
     }
 
-    public function resolve(array $args, array $context)
+    public function resolve(
+        array $args,
+        array $context,
+        array $root,
+        ResolveInfo $info
+    ): array
     {
         $input = $args['input'] ?? [];
         $pageSize = $input['pageSize'] ?? null;
