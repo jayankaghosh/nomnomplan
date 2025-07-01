@@ -9,12 +9,18 @@ import {
     Paper,
     Typography,
     TablePagination,
-    TableSortLabel
+    TableSortLabel,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from '@mui/material';
 import {useEffect, useState} from 'react';
 import Loader from "components/loader";
 import {fetchData} from "util/api";
 import {toast} from "react-toastify";
+import {extractFormData} from "util/form";
 
 const AdminGrid = ({
    title = 'Grid',
@@ -25,9 +31,16 @@ const AdminGrid = ({
    initialSortField = 'id',
    initialSortDirection = 'asc',
    rowsPerPageOptions = [2, 5, 10, 20, 50],
+   inputVariableName = 'input',
+   innerQuery= null,
+   innerQueryInputVariableName= 'innerInput',
    columns = [],
    rowMutator = null,
-   columnRenderers = {}
+   columnRenderers = {},
+   AddNewItemForm = null,
+   addNewItemQuery,
+   addNewItemQueryName,
+   prepareItemData,
 }) => {
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -36,12 +49,14 @@ const AdminGrid = ({
     const [sortField, setSortField] = useState(initialSortField);
     const [sortDirection, setSortDirection] = useState(initialSortDirection);
 
+    const [isAddNewPopupOpen, setIsAddNewPopupOpen] = useState(false);
+
     useEffect(() => {
-        const execute = async () => {
+        const fetchApiData = async () => {
             try {
                 setIsLoading(true);
                 const variables = {
-                    input: {
+                    [inputVariableName]: {
                         filterGroups: [],
                         pageSize: rowsPerPage,
                         currentPage: page,
@@ -53,15 +68,20 @@ const AdminGrid = ({
                         ]
                     }
                 }
-                const { [queryName]: response } = await fetchData(query, variables);
+                const { [queryName]: response } = await fetchData(
+                    query(inputVariableName, innerQuery),
+                    variables,
+                    'AdminGrid'
+                );
                 setData(response);
-            } catch ({ message }) {
+            } catch ({ category, message }) {
+                if (category === 'aborted') return;
                 toast.error(message);
             } finally {
                 setIsLoading(false);
             }
         }
-        execute();
+        fetchApiData();
     }, [
         page,
         rowsPerPage,
@@ -89,12 +109,69 @@ const AdminGrid = ({
         return <Loader isLoading={true} />;
     }
 
+    const onAddNewPopupOpen = () => setIsAddNewPopupOpen(true);
+    const onAddNewPopupClose = () => setIsAddNewPopupOpen(false);
+
+    const onAddNewFormSubmit = async e => {
+        e.preventDefault();
+        const itemData = prepareItemData(extractFormData(e.target));
+        try {
+            setIsLoading(true);
+            const variables = {
+                [inputVariableName]: itemData,
+                [innerQueryInputVariableName]: {
+                    filterGroups: [],
+                    pageSize: rowsPerPage,
+                    currentPage: page,
+                    sort: [
+                        {
+                            field: sortField,
+                            direction: sortDirection.toUpperCase()
+                        }
+                    ]
+                }
+            }
+            const { [addNewItemQueryName]: {[queryName]: response} } = await fetchData(
+                addNewItemQuery(
+                    inputVariableName,
+                    innerQuery,
+                    innerQueryInputVariableName
+                ), variables, 'AdminGridAddItem');
+            setData(response);
+            setIsAddNewPopupOpen(false);
+        } catch ({ category, message }) {
+            if (category === 'aborted') return;
+            toast.error(message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     return (
         <Box>
             <Loader isLoading={isLoading} />
-            <Typography variant="h4" gutterBottom>
-                { title }
-            </Typography>
+
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h4" gutterBottom>
+                    { title }
+                </Typography>
+                <Button variant="contained" color="primary" onClick={onAddNewPopupOpen}>
+                    Add New
+                </Button>
+            </Box>
+
+            <Dialog open={isAddNewPopupOpen} onClose={onAddNewPopupClose} fullWidth maxWidth="sm">
+                <DialogTitle>Add New Item</DialogTitle>
+                <Box component="form" onSubmit={onAddNewFormSubmit}>
+                    <DialogContent dividers>
+                        { AddNewItemForm ? <AddNewItemForm /> : <span>Override the AddNewItemForm prop</span> }
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={onAddNewPopupClose}>Cancel</Button>
+                        <Button type="submit" variant="contained">Submit</Button>
+                    </DialogActions>
+                </Box>
+            </Dialog>
 
             <TableContainer component={Paper}>
                 <Table>

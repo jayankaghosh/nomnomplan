@@ -27,7 +27,11 @@ const AdminSetPassword = props => {
                 setIsValid(false);
                 setErrorMessage('Token not found');
             } else {
-                const { isAdminPasswordTokenValid: { status, message } } = await fetchData(isAdminPasswordTokenValidQuery(), {token});
+                const { isAdminPasswordTokenValid: { status, message } } = await fetchData(
+                    isAdminPasswordTokenValidQuery(),
+                    {token},
+                    'IsAdminPasswordTokenValid'
+                );
                 if (status) {
                     setIsValid(true);
                 } else {
@@ -49,7 +53,7 @@ const AdminSetPassword = props => {
             const {adminUserSetPassword: {status, message}} = await fetchData(getAdminUserSetPasswordQuery(), {
                 token,
                 password
-            });
+            }, 'AdminUserSetPassword');
             if (status) {
                 toast.success(message);
                 navigate(ADMIN_LOGIN)

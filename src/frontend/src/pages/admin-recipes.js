@@ -2,10 +2,18 @@
 import AdminLayout from "layout/admin";
 import {useAdminGuard} from "hooks/useAdminGuard";
 import AdminGrid from "components/admin-grid";
-import {getRecipeListQuery} from "../query/admin";
+import {
+    _getRecipesQuery,
+    getIngredientListQuery,
+    getInsertOrUpdateRecipeMutation,
+    getRecipeListQuery
+} from "query/admin";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { List, ListItem, ListItemText } from '@mui/material';
+import {List, ListItem, ListItemText, TextField} from '@mui/material';
+import DynamicRowsInput from "components/dynamic-rows-input";
+import {fetchData} from "util/api";
+import {toast} from "react-toastify";
 
 dayjs.extend(relativeTime);
 
@@ -33,15 +41,103 @@ const AdminRecipes = props => {
         );
     }
 
+    const AddNewItemForm = () => {
+        return (
+            <>
+                <TextField
+                    label="Name"
+                    type={'text'}
+                    name='name'
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <DynamicRowsInput
+                    title={'Ingredients'}
+                    name={'ingredients'}
+                    columns={[
+                        {
+                            name: 'id',
+                            label: 'Ingredient',
+                            type: 'async-select',
+                            fetchOptions: async (searchText) => {
+                                const variables = {
+                                    input: {
+                                        filterGroups: [
+                                            {
+                                                type: "AND",
+                                                filters: [
+                                                    {
+                                                        field: 'name',
+                                                        condition: 'LIKE',
+                                                        value: `%${searchText.toLowerCase()}%`
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        pageSize: 10,
+                                        currentPage: 1,
+                                        sort: [
+                                            {
+                                                field: 'id',
+                                                direction: 'ASC'
+                                            }
+                                        ]
+                                    }
+                                }
+                                try {
+                                    const {adminGetIngredients: response} = await fetchData(
+                                        getIngredientListQuery(),
+                                        variables,
+                                        'AdminGetIngredients'
+                                    );
+                                    return response.items.map(item => {
+                                        return {
+                                            value: item.id,
+                                            label: `${item.name} (${item.qty_unit})`
+                                        }
+                                    });
+                                } catch ({ category, message }) {
+                                    if (category === 'aborted') return;
+                                    toast.error(message);
+                                }
+                                return [];
+                            }
+                        },
+                        {
+                            name: 'qty',
+                            label: 'Qty',
+                            type: 'number'
+                        }
+                    ]}
+                />
+            </>
+        )
+    }
+
+    const prepareItemData = item => {
+        item.ingredients = JSON.parse(item.ingredients).map(i => {
+            i.id = parseInt(i.id);
+            i.qty = parseFloat(i.qty);
+            return i;
+        });
+        return item;
+    }
+
     return (
         <AdminLayout>
             <AdminGrid
                 title={'Recipe List'}
-                query={getRecipeListQuery()}
+                query={getRecipeListQuery}
+                innerQuery={_getRecipesQuery}
                 queryName={'adminGetRecipes'}
                 columns={['id', 'name', 'ingredients', 'created_at', 'updated_at']}
                 rowMutator={ rowMutator }
                 columnRenderers={{ ingredients: ingredientsRenderer }}
+                AddNewItemForm={AddNewItemForm}
+                addNewItemQuery={getInsertOrUpdateRecipeMutation}
+                addNewItemQueryName={'adminInsertOrUpdateRecipe'}
+                prepareItemData={prepareItemData}
             />
         </AdminLayout>
     );

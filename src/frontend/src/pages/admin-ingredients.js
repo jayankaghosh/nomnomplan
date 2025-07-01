@@ -2,9 +2,10 @@
 import AdminLayout from "layout/admin";
 import {useAdminGuard} from "hooks/useAdminGuard";
 import AdminGrid from "components/admin-grid";
-import {getIngredientListQuery} from "../query/admin";
+import {_getIngredientsQuery, getIngredientListQuery, getInsertOrUpdateIngredientMutation} from "../query/admin";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
+import {TextField, Select, MenuItem, FormControl, InputLabel} from "@mui/material";
 dayjs.extend(relativeTime);
 
 const AdminIngredients = props => {
@@ -17,14 +18,58 @@ const AdminIngredients = props => {
         return row;
     }
 
+    const AddNewItemForm = () => {
+        return (
+            <>
+                <TextField
+                    label="Name"
+                    type={'text'}
+                    name='name'
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Is Veg *</InputLabel>
+                    <Select
+                        label="Is Veg"
+                        name='is_veg'
+                        required
+                    >
+                        <MenuItem value="1">Yes</MenuItem>
+                        <MenuItem value="0">No</MenuItem>
+                    </Select>
+                </FormControl>
+                <TextField
+                    label="Qty Unit"
+                    type={'text'}
+                    name='qty_unit'
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+            </>
+        )
+    }
+
+    const prepareItemData = item => {
+        item.is_veg = item.is_veg === '1';
+        return item;
+    }
+
     return (
         <AdminLayout>
             <AdminGrid
                 title={'Ingredient List'}
-                query={getIngredientListQuery()}
+                query={getIngredientListQuery}
+                innerQuery={_getIngredientsQuery}
                 queryName={'adminGetIngredients'}
                 columns={['id', 'name', 'is_veg', 'qty_unit', 'created_at', 'updated_at']}
                 rowMutator={ rowMutator }
+                AddNewItemForm={AddNewItemForm}
+                addNewItemQuery={getInsertOrUpdateIngredientMutation}
+                addNewItemQueryName={'adminInsertOrUpdateIngredient'}
+                prepareItemData={prepareItemData}
             />
         </AdminLayout>
     );

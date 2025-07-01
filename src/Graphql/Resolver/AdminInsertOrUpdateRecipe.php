@@ -8,7 +8,7 @@ use JayankaGhosh\NomNomPlan\Exception\InvalidArgumentException;
 use JayankaGhosh\NomNomPlan\Graphql\AdminResolverInterface;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
 
-class AdminInsertRecipe implements AdminResolverInterface
+class AdminInsertOrUpdateRecipe implements AdminResolverInterface
 {
 
     public function __construct(
@@ -30,11 +30,16 @@ class AdminInsertRecipe implements AdminResolverInterface
         $input = $args['input'];
         $ingredients = $input['ingredients'];
         unset($input['ingredients']);
+        $name = strtolower($input['name']);
+        if ($recipeTable->load('name', $name)) {
+            throw new InvalidArgumentException(sprintf('Recipe with name "%s" already exists', $name));
+        }
         foreach ($ingredients as $ingredient) {
             if (!$ingredientTable->load('id', $ingredient['id'])) {
                 throw new InvalidArgumentException(sprintf('Ingredient with ID "%s" not found', $ingredient['id']));
             }
         }
+        $input['name'] = $name;
         $recipe = $recipeTable->insert($input);
         if (!$recipe) {
             throw new InternalApplicationException('Could not save data');

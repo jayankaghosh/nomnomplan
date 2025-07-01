@@ -23,9 +23,10 @@ const AdminLogin = props => {
             const {generateAdminToken: {token}} = await fetchData(getGenerateAdminTokenQuery(), {
                 username,
                 password
-            });
+            }, 'GenerateAdminToken');
             setAdminToken(token);
-        } catch ({ message }) {
+        } catch ({ category, message }) {
+            if (category === 'aborted') return;
             toast.error(message);
         } finally {
             setIsLoading(false);

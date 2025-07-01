@@ -41,24 +41,26 @@ type Mutation {
   ): Token
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GenerateAdminToken")
 
-  adminInsertIngredient(
+  adminInsertOrUpdateIngredient(
     input: IngredientInput!
   ): Query
-  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminInsertIngredient")
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminInsertOrUpdateIngredient")
 
-  adminInsertRecipe(
+  adminInsertOrUpdateRecipe(
     input: RecipeInput!
   ): Query
-  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminInsertRecipe")
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminInsertOrUpdateRecipe")
 }
 
 input IngredientInput {
+  id: Int
   name: String!
   is_veg: Boolean!
   qty_unit: String!
 }
 
 input RecipeInput {
+  id: Int
   name: String!
   ingredients: [RecipeIngredientInput]!
 }
