@@ -47,12 +47,14 @@ const DynamicRowsInput = ({
 
     const renderColumn = (col, row, index) => {
         if (col.type === 'async-select') {
+            const value = row[col.name];
             return (
                 <AsyncSelect
                     label={col.label}
-                    value={row[col.name]}
+                    value={value}
                     onChange={(val) => handleChange(index, col.name, val)}
                     fetchOptions={col.fetchOptions}
+                    initialOptions={col.initialOptions || []}
                 />
             );
         }

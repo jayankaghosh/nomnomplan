@@ -41,7 +41,24 @@ const AdminRecipes = props => {
         );
     }
 
-    const AddNewItemForm = () => {
+    const AddNewItemForm = ({ formValues }) => {
+
+        const prepareIngredientLabel = ingredient => `${ingredient.name} (${ingredient.qty_unit})`
+
+        const initialIngredientRows = [];
+        const initialIngredientOptions = [];
+        if (formValues.ingredients) {
+            formValues.ingredients.forEach(ingredient => {
+                initialIngredientRows.push({
+                    qty: ingredient.qty,
+                    id: ingredient.id
+                });
+                initialIngredientOptions.push({
+                    label: prepareIngredientLabel(ingredient),
+                    value: ingredient.id
+                });
+            });
+        }
         return (
             <>
                 <TextField
@@ -50,9 +67,11 @@ const AdminRecipes = props => {
                     name='name'
                     fullWidth
                     margin="normal"
+                    defaultValue={formValues['name']}
                     required
                 />
                 <DynamicRowsInput
+                    initialRows={initialIngredientRows}
                     title={'Ingredients'}
                     name={'ingredients'}
                     columns={[
@@ -60,6 +79,7 @@ const AdminRecipes = props => {
                             name: 'id',
                             label: 'Ingredient',
                             type: 'async-select',
+                            initialOptions: initialIngredientOptions,
                             fetchOptions: async (searchText) => {
                                 const variables = {
                                     input: {
@@ -94,7 +114,7 @@ const AdminRecipes = props => {
                                     return response.items.map(item => {
                                         return {
                                             value: item.id,
-                                            label: `${item.name} (${item.qty_unit})`
+                                            label: prepareIngredientLabel(item)
                                         }
                                     });
                                 } catch ({ category, message }) {
@@ -116,7 +136,7 @@ const AdminRecipes = props => {
     }
 
     const prepareItemData = item => {
-        item.ingredients = JSON.parse(item.ingredients).map(i => {
+        item.ingredients = JSON.parse(item.ingredients).filter(i => i.id && i.qty).map(i => {
             i.id = parseInt(i.id);
             i.qty = parseFloat(i.qty);
             return i;

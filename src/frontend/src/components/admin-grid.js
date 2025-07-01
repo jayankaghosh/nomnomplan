@@ -49,7 +49,9 @@ const AdminGrid = ({
     const [sortField, setSortField] = useState(initialSortField);
     const [sortDirection, setSortDirection] = useState(initialSortDirection);
 
+
     const [isAddNewPopupOpen, setIsAddNewPopupOpen] = useState(false);
+    const [formValues, setFormValues] = useState({});
 
     useEffect(() => {
         const fetchApiData = async () => {
@@ -109,12 +111,18 @@ const AdminGrid = ({
         return <Loader isLoading={true} />;
     }
 
-    const onAddNewPopupOpen = () => setIsAddNewPopupOpen(true);
+    const onAddNewPopupOpen = () => {
+        setFormValues({});
+        setIsAddNewPopupOpen(true);
+    }
     const onAddNewPopupClose = () => setIsAddNewPopupOpen(false);
 
     const onAddNewFormSubmit = async e => {
         e.preventDefault();
         const itemData = prepareItemData(extractFormData(e.target));
+        if (itemData.id) {
+            itemData.id = parseInt(itemData.id);
+        }
         try {
             setIsLoading(true);
             const variables = {
@@ -147,6 +155,42 @@ const AdminGrid = ({
         }
     }
 
+    const onEdit = row => {
+        setFormValues(row);
+        setIsAddNewPopupOpen(true);
+    }
+
+    const onDelete = row => {
+
+    }
+
+    columns = [...columns, 'actions'];
+    if (!columnRenderers['actions']) {
+        columnRenderers['actions'] = (column, row, rawRow) => {
+            return (
+                <TableCell key="actions">
+                    <Button
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                        onClick={() => onEdit(rawRow)}
+                        style={{ marginRight: 8 }}
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        size="small"
+                        variant="contained"
+                        color="error"
+                        onClick={() => onDelete(rawRow)}
+                    >
+                        Delete
+                    </Button>
+                </TableCell>
+            );
+        }
+    }
+
     return (
         <Box>
             <Loader isLoading={isLoading} />
@@ -164,7 +208,8 @@ const AdminGrid = ({
                 <DialogTitle>Add New Item</DialogTitle>
                 <Box component="form" onSubmit={onAddNewFormSubmit}>
                     <DialogContent dividers>
-                        { AddNewItemForm ? <AddNewItemForm /> : <span>Override the AddNewItemForm prop</span> }
+                        { formValues['id'] && <input type='hidden' name='id' value={formValues['id']} /> }
+                        { AddNewItemForm ? <AddNewItemForm formValues={formValues} /> : <span>Override the AddNewItemForm prop</span> }
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={onAddNewPopupClose}>Cancel</Button>
@@ -200,8 +245,9 @@ const AdminGrid = ({
                     <TableBody>
                         {
                             data.items.map((row, index) => {
+                                const rawRow = {...row};
                                 if (typeof rowMutator === 'function') {
-                                    row = rowMutator(row);
+                                    row = rowMutator({...row});
                                 }
                                 return (
                                     <TableRow key={index}>
@@ -213,7 +259,7 @@ const AdminGrid = ({
                                                 }
                                                 return (
                                                     <TableCell key={column}>
-                                                        { renderer(row[column]) }
+                                                        { renderer(row[column], row, rawRow) }
                                                     </TableCell>
                                                 )
                                             })

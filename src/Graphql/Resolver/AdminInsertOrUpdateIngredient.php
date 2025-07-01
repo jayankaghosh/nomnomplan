@@ -25,7 +25,7 @@ class AdminInsertOrUpdateIngredient implements AdminResolverInterface
         $table = $this->tableFactory->create(['tableName' => 'ingredient']);
         $input = $args['input'];
         $name = strtolower($input['name']);
-        if ($table->load('name', $name)) {
+        if (!isset($input['id']) && $table->load('name', $name)) {
             throw new InvalidArgumentException(sprintf('Ingredient with name "%s" already exists', $name));
         }
         $input['is_veg'] = $input['is_veg'] ? 1 : 0;

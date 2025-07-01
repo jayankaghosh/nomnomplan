@@ -3,14 +3,14 @@ import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 import { useDebounce } from 'util/stdlib';
 
 const AsyncSelect = ({
-                         label,
-                         value,
-                         onChange,
-                         fetchOptions,
-                         name = 'hiddenInput' // optional prop for hidden input name
-                     }) => {
+    label,
+    value,
+    onChange,
+    fetchOptions,
+    initialOptions = []
+}) => {
     const [inputValue, setInputValue] = useState('');
-    const [options, setOptions] = useState([]);
+    const [options, setOptions] = useState(initialOptions);
     const [loading, setLoading] = useState(false);
 
     const debouncedInput = useDebounce(inputValue, 500);

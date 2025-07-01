@@ -18,7 +18,7 @@ const AdminIngredients = props => {
         return row;
     }
 
-    const AddNewItemForm = () => {
+    const AddNewItemForm = ({ formValues }) => {
         return (
             <>
                 <TextField
@@ -27,6 +27,7 @@ const AdminIngredients = props => {
                     name='name'
                     fullWidth
                     margin="normal"
+                    defaultValue={formValues['name']}
                     required
                 />
                 <FormControl fullWidth margin="normal">
@@ -34,6 +35,7 @@ const AdminIngredients = props => {
                     <Select
                         label="Is Veg"
                         name='is_veg'
+                        defaultValue={formValues['is_veg']}
                         required
                     >
                         <MenuItem value="1">Yes</MenuItem>
@@ -46,6 +48,7 @@ const AdminIngredients = props => {
                     name='qty_unit'
                     fullWidth
                     margin="normal"
+                    defaultValue={formValues['qty_unit']}
                     required
                 />
             </>
