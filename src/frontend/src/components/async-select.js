@@ -18,7 +18,7 @@ const AsyncSelect = ({
     const selectedOption = options.find(opt => opt.value === value);
 
     useEffect(() => {
-        if (debouncedInput === '') return;
+        if (debouncedInput === '' || debouncedInput.length < 3) return;
 
         let active = true;
         setLoading(true);

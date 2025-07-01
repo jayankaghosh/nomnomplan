@@ -178,7 +178,8 @@ const AdminGrid = ({
                 },
                 id: row.id
             }
-            const {response: {[innerQueryInputVariableName]: response}} = await fetchData(deleteQuery(), variables);
+            const {response: {[innerQuery]: response}} = await fetchData(deleteQuery(), variables);
+            console.log(response);
             setData(response);
         } catch ({ category, message }) {
             if (category === 'aborted') return;

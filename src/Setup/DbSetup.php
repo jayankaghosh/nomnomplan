@@ -177,6 +177,10 @@ class DbSetup implements NonInterceptableInterface
                 "VARCHAR(50)",
                 "NOT NULL"
             ],
+            "unit_price" => [
+                "DECIMAL(10,2)",
+                "NOT NULL"
+            ],
             "created_at" => [
                 "DATETIME",
                 "NOT NULL",

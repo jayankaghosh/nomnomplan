@@ -12,6 +12,7 @@ export const _getIngredientsQuery = (variableName) => {
               name
               is_veg
               qty_unit
+              unit_price
               created_at
               updated_at
             }
@@ -34,6 +35,7 @@ export const _getRecipesQuery = (variableName) => {
                 name
                 is_veg
                 qty_unit
+                unit_price
                 qty
                 created_at
                 updated_at

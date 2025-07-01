@@ -4,7 +4,6 @@ import {useAdminGuard} from "hooks/useAdminGuard";
 import AdminGrid from "components/admin-grid";
 import {
     _getRecipesQuery, getDeleteRecipeMutation,
-    getIngredientListQuery,
     getInsertOrUpdateRecipeMutation,
     getRecipeListQuery
 } from "query/admin";
@@ -12,8 +11,9 @@ import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {List, ListItem, ListItemText, TextField} from '@mui/material';
 import DynamicRowsInput from "components/dynamic-rows-input";
-import {fetchData} from "util/api";
 import {toast} from "react-toastify";
+import {search} from "util/algolia";
+import {ucwords} from "util/stdlib";
 
 dayjs.extend(relativeTime);
 
@@ -21,6 +21,7 @@ const AdminRecipes = props => {
     useAdminGuard();
 
     const rowMutator = row => {
+        row.name = ucwords(row.name);
         row.created_at = dayjs(row.created_at).fromNow();
         row.updated_at = dayjs(row.updated_at).fromNow();
         return row;
@@ -81,37 +82,9 @@ const AdminRecipes = props => {
                             type: 'async-select',
                             initialOptions: initialIngredientOptions,
                             fetchOptions: async (searchText) => {
-                                const variables = {
-                                    input: {
-                                        filterGroups: [
-                                            {
-                                                type: "AND",
-                                                filters: [
-                                                    {
-                                                        field: 'name',
-                                                        condition: 'LIKE',
-                                                        value: `%${searchText.toLowerCase()}%`
-                                                    }
-                                                ]
-                                            }
-                                        ],
-                                        pageSize: 10,
-                                        currentPage: 1,
-                                        sort: [
-                                            {
-                                                field: 'id',
-                                                direction: 'ASC'
-                                            }
-                                        ]
-                                    }
-                                }
                                 try {
-                                    const {adminGetIngredients: response} = await fetchData(
-                                        getIngredientListQuery(),
-                                        variables,
-                                        'AdminGetIngredients'
-                                    );
-                                    return response.items.map(item => {
+                                    const hits = await search('ingredient', searchText);
+                                    return hits.map(item => {
                                         return {
                                             value: item.id,
                                             label: prepareIngredientLabel(item)

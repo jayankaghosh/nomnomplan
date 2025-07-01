@@ -11,6 +11,7 @@ import {
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {TextField, Select, MenuItem, FormControl, InputLabel} from "@mui/material";
+import {ucwords} from "util/stdlib";
 dayjs.extend(relativeTime);
 
 const AdminIngredients = props => {
@@ -18,6 +19,10 @@ const AdminIngredients = props => {
 
     const rowMutator = row => {
         row.is_veg = row.is_veg === '1' ? 'Yes' : 'No';
+        row.unit_price = new Intl.NumberFormat("en-US", { style: "currency", currency: "INR" }).format(
+            row.unit_price,
+        );
+        row.name = ucwords(row.name);
         row.created_at = dayjs(row.created_at).fromNow();
         row.updated_at = dayjs(row.updated_at).fromNow();
         return row;
@@ -47,13 +52,35 @@ const AdminIngredients = props => {
                         <MenuItem value="0">No</MenuItem>
                     </Select>
                 </FormControl>
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Qty Unit *</InputLabel>
+                    <Select
+                        label="Qty Unit"
+                        name='qty_unit'
+                        defaultValue={formValues['qty_unit']}
+                        required
+                    >
+                        <MenuItem value="kg(s)">Kg(s)</MenuItem>
+                        <MenuItem value="gram(s)">gram(s)</MenuItem>
+                        <MenuItem value="mg">milligram(s)</MenuItem>
+                        <MenuItem value="lb">Pound(s)</MenuItem>
+                        <MenuItem value="piece">piece</MenuItem>
+                        <MenuItem value="ml">ml</MenuItem>
+                        <MenuItem value="l">Litre</MenuItem>
+                        <MenuItem value="tsp">Teaspoon</MenuItem>
+                        <MenuItem value="tbsp">Tablespoon</MenuItem>
+                        <MenuItem value="packet">Packet</MenuItem>
+                        <MenuItem value="slice">Slice</MenuItem>
+                        <MenuItem value="pinch">Pinch</MenuItem>
+                    </Select>
+                </FormControl>
                 <TextField
-                    label="Qty Unit"
-                    type={'text'}
-                    name='qty_unit'
+                    label="Unit Price"
+                    type={'number'}
+                    name='unit_price'
                     fullWidth
                     margin="normal"
-                    defaultValue={formValues['qty_unit']}
+                    defaultValue={formValues['unit_price']}
                     required
                 />
             </>
@@ -62,6 +89,7 @@ const AdminIngredients = props => {
 
     const prepareItemData = item => {
         item.is_veg = item.is_veg === '1';
+        item.unit_price = parseFloat(item.unit_price);
         return item;
     }
 
@@ -72,7 +100,7 @@ const AdminIngredients = props => {
                 query={getIngredientListQuery}
                 innerQuery={_getIngredientsQuery}
                 queryName={'adminGetIngredients'}
-                columns={['id', 'name', 'is_veg', 'qty_unit', 'created_at', 'updated_at']}
+                columns={['id', 'name', 'is_veg', 'qty_unit', 'unit_price', 'created_at', 'updated_at']}
                 rowMutator={ rowMutator }
                 AddNewItemForm={AddNewItemForm}
                 addNewItemQuery={getInsertOrUpdateIngredientMutation}

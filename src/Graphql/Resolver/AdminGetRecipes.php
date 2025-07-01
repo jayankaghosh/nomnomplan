@@ -24,6 +24,7 @@ class AdminGetRecipes extends PaginatedList implements AdminResolverInterface
                 'ingredient.name',
                 'ingredient.is_veg',
                 'ingredient.qty_unit',
+                'ingredient.unit_price',
                 'ingredient.created_at',
                 'ingredient.updated_at',
                 'recipe_ingredient.ingredient_qty(qty)'

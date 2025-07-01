@@ -13,3 +13,7 @@ export const useDebounce = (value, delay = 500) => {
 
     return debounced;
 };
+
+export const ucwords = str => {
+    return str.replace(/\b\w/g, char => char.toUpperCase());
+}

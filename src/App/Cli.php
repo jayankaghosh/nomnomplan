@@ -3,6 +3,7 @@
 namespace JayankaGhosh\NomNomPlan\App;
 
 use JayankaGhosh\NomNomPlan\Console\AdminUserCreate;
+use JayankaGhosh\NomNomPlan\Console\AlgoliaIndex;
 use JayankaGhosh\NomNomPlan\Console\Email;
 use JayankaGhosh\NomNomPlan\Console\Setup;
 use Om\ObjectManager\ObjectManager;
@@ -24,7 +25,8 @@ class Cli implements AppInterface
         $commands = [
             Setup::class,
             Email::class,
-            AdminUserCreate::class
+            AdminUserCreate::class,
+            AlgoliaIndex::class,
         ];
         foreach ($commands as $command) {
             $application->add($this->objectManager->create($command));

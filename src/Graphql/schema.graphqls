@@ -67,6 +67,7 @@ input IngredientInput {
   name: String!
   is_veg: Boolean!
   qty_unit: String!
+  unit_price: Float!
 }
 
 input RecipeInput {
@@ -161,6 +162,7 @@ type Ingredient implements PaginatedListItem {
   name: String
   is_veg: String
   qty_unit: String
+  unit_price: Float
   created_at: String!
   updated_at: String!
 }
@@ -186,6 +188,7 @@ type RecipeIngredient implements PaginatedListItem {
   name: String
   is_veg: String
   qty_unit: String
+  unit_price: Float
   qty: Float
   created_at: String!
   updated_at: String!
