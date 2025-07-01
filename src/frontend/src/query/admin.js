@@ -48,6 +48,25 @@ export const _getRecipesQuery = (variableName) => {
     `;
 }
 
+export const _getUsersQuery = (variableName) => {
+    return `
+        adminGetUsers(input: $${variableName}) {
+            currentPage
+            pageSize
+            totalPages
+            totalCount
+            items {
+              id
+              name
+              email
+              phone
+              created_at
+              updated_at
+            }
+        }
+    `;
+}
+
 export const isAdminPasswordTokenValidQuery = token => {
     return `
         query ($token: String!) {
@@ -96,6 +115,14 @@ export const getRecipeListQuery = (input = 'input', innerQuery = _getRecipesQuer
     `;
 }
 
+export const getUserListQuery = (input = 'input', innerQuery = _getUsersQuery) => {
+    return `
+        query ($${input}: PaginatedListInput!) {
+          ${innerQuery(input)}
+        }    
+    `;
+}
+
 export const getInsertOrUpdateIngredientMutation = (input = 'input', innerQuery = _getIngredientsQuery, innerInput = 'innerInput') => {
     return `
         mutation AdminInsertOrUpdateIngredient(
@@ -122,6 +149,19 @@ export const getInsertOrUpdateRecipeMutation = (input = 'input', innerQuery = _g
     `;
 }
 
+export const getInsertOrUpdateUserMutation = (input = 'input', innerQuery = _getUsersQuery, innerInput = 'innerInput') => {
+    return `
+        mutation AdminInsertOrUpdateUser(
+          $${input}: UserInput!
+          $${innerInput}: PaginatedListInput!
+        ) {
+          adminInsertOrUpdateUser(input: $${input}) {
+            ${innerQuery(innerInput)}
+          }
+        }
+    `;
+}
+
 export const getDeleteIngredientMutation = (innerQuery = _getIngredientsQuery, innerInput = 'innerInput') => {
     return `
         mutation AdminDeleteIngredient(
@@ -142,6 +182,19 @@ export const getDeleteRecipeMutation = (innerQuery = _getRecipesQuery, innerInpu
             $${innerInput}: PaginatedListInput!
         ) {
           response: adminDeleteRecipe(id: $id) {
+            ${innerQuery(innerInput)}
+          }
+        }    
+    `;
+}
+
+export const getDeleteUserMutation = (innerQuery = _getUsersQuery, innerInput = 'innerInput') => {
+    return `
+        mutation AdminDeleteUser(
+            $id: Int!
+            $${innerInput}: PaginatedListInput!
+        ) {
+          response: adminDeleteUser(id: $id) {
             ${innerQuery(innerInput)}
           }
         }    

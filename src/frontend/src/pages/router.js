@@ -14,9 +14,11 @@ import {
     ADMIN_LOGIN,
     ADMIN_RECIPES,
     ADMIN_SET_PASSWORD,
+    ADMIN_USERS,
     HOME,
     LOGIN
 } from "pages/routes.config";
+import AdminUsers from "./admin-users";
 
 const AppRouter = () => {
     return (
@@ -28,6 +30,7 @@ const AppRouter = () => {
             <Route path={ADMIN_DASHBOARD} Component={AdminDashboard} />
             <Route path={ADMIN_INGREDIENTS} Component={AdminIngredients} />
             <Route path={ADMIN_RECIPES} Component={AdminRecipes} />
+            <Route path={ADMIN_USERS} Component={AdminUsers} />
             <Route path={`${ADMIN_DASHBOARD}/*`} Component={AdminNoRoute} />
             <Route path="*" Component={NoRoute} />
         </Routes>

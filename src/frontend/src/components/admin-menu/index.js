@@ -1,7 +1,7 @@
 import {List, ListItem, ListItemText} from "@mui/material";
 import {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {ADMIN_DASHBOARD, ADMIN_INGREDIENTS, ADMIN_LOGIN, ADMIN_RECIPES} from "pages/routes.config";
+import {ADMIN_DASHBOARD, ADMIN_INGREDIENTS, ADMIN_LOGIN, ADMIN_RECIPES, ADMIN_USERS} from "pages/routes.config";
 import {getURI} from "util/url";
 import {setAdminToken} from "util/auth";
 
@@ -18,6 +18,7 @@ const AdminMenu = ({ drawerOpen }) => {
         { label: 'Dashboard', action: ADMIN_DASHBOARD },
         { label: 'Ingredients', action: ADMIN_INGREDIENTS },
         { label: 'Recipes', action: ADMIN_RECIPES },
+        { label: 'Users', action: ADMIN_USERS },
         { label: 'Logout', action: doLogout },
     ];
 

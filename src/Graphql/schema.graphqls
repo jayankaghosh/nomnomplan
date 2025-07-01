@@ -25,6 +25,12 @@ type Query {
   ): GenericResponse
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\IsAdminPasswordTokenValid")
 
+  """Get a paginated list of recipes"""
+  adminGetUsers(
+    input: PaginatedListInput!
+  ): UserList
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminGetUsers")
+
 }
 
 type Mutation {
@@ -51,6 +57,11 @@ type Mutation {
   ): Query
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminInsertOrUpdateRecipe")
 
+  adminInsertOrUpdateUser(
+    input: UserInput!
+  ): Query
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminInsertOrUpdateUser")
+
   adminDeleteIngredient(
     id: Int!
   ): Query
@@ -60,6 +71,11 @@ type Mutation {
     id: Int!
   ): Query
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminDeleteRecipe")
+
+  adminDeleteUser(
+    id: Int!
+  ): Query
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminDeleteUser")
 }
 
 input IngredientInput {
@@ -74,6 +90,14 @@ input RecipeInput {
   id: Int
   name: String!
   ingredients: [RecipeIngredientInput]!
+}
+
+input UserInput {
+  id: Int
+  name: String!
+  email: String!
+  phone: String!
+  password: String!
 }
 
 input RecipeIngredientInput {
@@ -123,10 +147,15 @@ enum FilterCondition {
   EQ
   """Less than"""
   LT
+  """Less than or equal to"""
   LTEQ
+  """Greater than"""
   GT
+  """Greater than or equal to"""
   GTEQ
+  """In"""
   IN
+  """Like"""
   LIKE
 }
 
@@ -180,6 +209,23 @@ type Recipe implements PaginatedListItem {
   name: String
   ingredients: [RecipeIngredient]
   cost: Float
+  created_at: String!
+  updated_at: String!
+}
+
+type UserList implements PaginatedList {
+  pageSize: Int!
+  currentPage: Int!
+  totalPages: Int!
+  totalCount: Int!
+  items: [User]!
+}
+
+type User implements PaginatedListItem {
+  id: Int!
+  name: String
+  email: String
+  phone: String
   created_at: String!
   updated_at: String!
 }
