@@ -6,13 +6,17 @@ use GraphQL\Type\Definition\ResolveInfo;
 use JayankaGhosh\NomNomPlan\Exception\InvalidArgumentException;
 use JayankaGhosh\NomNomPlan\Graphql\AdminResolverInterface;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
+use JayankaGhosh\NomNomPlan\Util\Email;
 use JayankaGhosh\NomNomPlan\Util\Encryption;
+use JayankaGhosh\NomNomPlan\Util\Template;
 
 class AdminInsertOrUpdateUser implements AdminResolverInterface
 {
     public function __construct(
         private readonly TableFactory $tableFactory,
-        private readonly Encryption $encryption
+        private readonly Encryption $encryption,
+        private readonly Email $emailUtil,
+        private readonly Template $templateUtil,
     )
     {
     }
@@ -35,11 +39,30 @@ class AdminInsertOrUpdateUser implements AdminResolverInterface
         if (!isset($input['id']) && !$input['password']) {
             throw new InvalidArgumentException('Password is a required field');
         }
+        $password = null;
         if ($input['password']) {
+            $password = $input['password'];
             $input['password_hash'] = $this->encryption->hash($input['password']);
         }
         unset($input['password']);
-        $table->insert($input);
+        $user = $table->insert($input);
+        if (!isset($input['id'])) {
+            $user['password'] = $password;
+            $this->emailUtil->send(
+                'Welcome to NomNomPlan – Your account details inside',
+                $this->templateUtil->render('email/user_register', $user),
+                [
+                    'email' => $_ENV['EMAIL_FROM'],
+                    'name' => $_ENV['EMAIL_FROM_NAME']
+                ],
+                [
+                    [
+                        'email' => $input['email'],
+                        'name' => $input['name']
+                    ]
+                ]
+            );
+        }
         return [];
     }
 }

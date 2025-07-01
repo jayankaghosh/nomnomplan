@@ -181,7 +181,7 @@ const AdminGrid = ({
                 },
                 id: row.id
             }
-            const {response: {[innerQuery]: response}} = await fetchData(deleteQuery(), variables);
+            const {response: {[queryName]: response}} = await fetchData(deleteQuery(), variables);
             console.log(response);
             setData(response);
         } catch ({ category, message }) {

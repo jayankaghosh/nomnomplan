@@ -1,0 +1,19 @@
+<?php
+/** @var array $data */
+?>
+<p>Hello <?= htmlspecialchars($data['name']) ?>,</p>
+
+<p>Welcome to <strong>NomNomPlan</strong>! Your account has been successfully created.</p>
+
+<p>Here are your login credentials:</p>
+
+<ul>
+    <li><strong>Username:</strong> <?= htmlspecialchars($data['email']) ?></li>
+    <li><strong>Password:</strong> <?= htmlspecialchars($data['password']) ?></li>
+</ul>
+
+<p>You can now log in and start planning your meals with ease.</p>
+
+<p>If you did not expect this email, you can safely ignore it.</p>
+
+<p>Happy planning!<br>NomNomPlan Team</p>
