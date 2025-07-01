@@ -41,6 +41,7 @@ const AdminGrid = ({
    addNewItemQuery,
    addNewItemQueryName,
    prepareItemData,
+   deleteQuery,
 }) => {
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -160,8 +161,31 @@ const AdminGrid = ({
         setIsAddNewPopupOpen(true);
     }
 
-    const onDelete = row => {
-
+    const onDelete = async row => {
+        try {
+            setIsLoading(true);
+            const variables = {
+                [innerQueryInputVariableName]: {
+                    filterGroups: [],
+                    pageSize: rowsPerPage,
+                    currentPage: 1,
+                    sort: [
+                        {
+                            field: 'id',
+                            direction: 'ASC'
+                        }
+                    ]
+                },
+                id: row.id
+            }
+            const {response: {[innerQueryInputVariableName]: response}} = await fetchData(deleteQuery(), variables);
+            setData(response);
+        } catch ({ category, message }) {
+            if (category === 'aborted') return;
+            toast.error(message);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     columns = [...columns, 'actions'];

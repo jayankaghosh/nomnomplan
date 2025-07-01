@@ -31,6 +31,6 @@ class AdminInsertOrUpdateIngredient implements AdminResolverInterface
         $input['is_veg'] = $input['is_veg'] ? 1 : 0;
         $input['name'] = $name;
         $table->insert($input);
-        return $root;
+        return [];
     }
 }

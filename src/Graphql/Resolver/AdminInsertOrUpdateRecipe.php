@@ -44,13 +44,29 @@ class AdminInsertOrUpdateRecipe implements AdminResolverInterface
         if (!$recipe) {
             throw new InternalApplicationException('Could not save data');
         }
+        $validIngredients = [];
         foreach ($ingredients as $ingredient) {
-            $recipeIngredientTable->insert([
+            $existingRow = $recipeIngredientTable->load([
+                'recipe_id' => $recipe['id'],
+                'ingredient_id' => $ingredient['id']
+            ]);
+            $data = [
                 'recipe_id' => $recipe['id'],
                 'ingredient_id' => $ingredient['id'],
                 'ingredient_qty' => $ingredient['qty']
-            ]);
+            ];
+            if ($existingRow) {
+                $data['id'] = $existingRow['id'];
+            }
+            $validIngredients[] = $recipeIngredientTable->insert($data)['id'];
         }
-        return $root;
+        if (count($validIngredients)) {
+            $invalidRows = array_column($recipeIngredientTable->select([
+                'recipe_id' => $recipe['id'],
+                'id[!]' => $validIngredients
+            ], ['id']), 'id');
+            $recipeIngredientTable->delete($invalidRows);
+        }
+        return [];
     }
 }

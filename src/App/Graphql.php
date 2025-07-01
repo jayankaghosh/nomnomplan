@@ -55,7 +55,11 @@ class Graphql implements AppInterface
                     /** @var ResolverInterface $resolverClassInstance */
                     $resolverClassInstance = $objectManager->create($className);
                     $this->validateResolver($resolverClassInstance);
-                    return $resolverClassInstance->resolve($args, [...($context ?? []), ...$appContext], $root, $info);
+                    $response = $resolverClassInstance->resolve($args, [...($context ?? []), ...$appContext], $root, $info);
+                    if (!count($response)) {
+                        $response = $root;
+                    }
+                    return $response;
                 };
             }
         }

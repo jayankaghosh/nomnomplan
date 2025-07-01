@@ -118,3 +118,29 @@ export const getInsertOrUpdateRecipeMutation = (input = 'input', innerQuery = _g
         }
     `;
 }
+
+export const getDeleteIngredientMutation = (innerQuery = _getIngredientsQuery, innerInput = 'innerInput') => {
+    return `
+        mutation AdminDeleteIngredient(
+            $id: Int!
+            $${innerInput}: PaginatedListInput!
+        ) {
+          response: adminDeleteIngredient(id: $id) {
+            ${innerQuery(innerInput)}
+          }
+        }    
+    `;
+}
+
+export const getDeleteRecipeMutation = (innerQuery = _getRecipesQuery, innerInput = 'innerInput') => {
+    return `
+        mutation AdminDeleteRecipe(
+            $id: Int!
+            $${innerInput}: PaginatedListInput!
+        ) {
+          response: adminDeleteRecipe(id: $id) {
+            ${innerQuery(innerInput)}
+          }
+        }    
+    `;
+}

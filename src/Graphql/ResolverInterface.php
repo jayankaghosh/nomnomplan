@@ -11,5 +11,5 @@ interface ResolverInterface
         array $context,
         array $root,
         ResolveInfo $info
-    );
+    ): array;
 }

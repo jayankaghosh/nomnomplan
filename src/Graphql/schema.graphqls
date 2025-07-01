@@ -50,6 +50,16 @@ type Mutation {
     input: RecipeInput!
   ): Query
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminInsertOrUpdateRecipe")
+
+  adminDeleteIngredient(
+    id: Int!
+  ): Query
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminDeleteIngredient")
+
+  adminDeleteRecipe(
+    id: Int!
+  ): Query
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminDeleteRecipe")
 }
 
 input IngredientInput {

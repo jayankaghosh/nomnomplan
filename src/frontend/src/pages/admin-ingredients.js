@@ -2,7 +2,12 @@
 import AdminLayout from "layout/admin";
 import {useAdminGuard} from "hooks/useAdminGuard";
 import AdminGrid from "components/admin-grid";
-import {_getIngredientsQuery, getIngredientListQuery, getInsertOrUpdateIngredientMutation} from "../query/admin";
+import {
+    _getIngredientsQuery,
+    getDeleteIngredientMutation,
+    getIngredientListQuery,
+    getInsertOrUpdateIngredientMutation
+} from "../query/admin";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {TextField, Select, MenuItem, FormControl, InputLabel} from "@mui/material";
@@ -73,6 +78,7 @@ const AdminIngredients = props => {
                 addNewItemQuery={getInsertOrUpdateIngredientMutation}
                 addNewItemQueryName={'adminInsertOrUpdateIngredient'}
                 prepareItemData={prepareItemData}
+                deleteQuery={getDeleteIngredientMutation}
             />
         </AdminLayout>
     );

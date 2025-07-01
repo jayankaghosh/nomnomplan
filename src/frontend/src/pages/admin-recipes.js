@@ -3,7 +3,7 @@ import AdminLayout from "layout/admin";
 import {useAdminGuard} from "hooks/useAdminGuard";
 import AdminGrid from "components/admin-grid";
 import {
-    _getRecipesQuery,
+    _getRecipesQuery, getDeleteRecipeMutation,
     getIngredientListQuery,
     getInsertOrUpdateRecipeMutation,
     getRecipeListQuery
@@ -158,6 +158,7 @@ const AdminRecipes = props => {
                 addNewItemQuery={getInsertOrUpdateRecipeMutation}
                 addNewItemQueryName={'adminInsertOrUpdateRecipe'}
                 prepareItemData={prepareItemData}
+                deleteQuery={getDeleteRecipeMutation}
             />
         </AdminLayout>
     );

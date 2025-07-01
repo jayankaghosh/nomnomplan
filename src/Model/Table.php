@@ -38,11 +38,17 @@ class Table
         return $this->db->getConnection()->count(...$args);
     }
 
-    public function load($field, $value): ?array
+    public function load($field, $value = null): ?array
     {
-        return $this->db->getConnection()->get($this->tableName, "*", [
-            $field => $value
-        ]);
+        $conditions = [];
+        if (is_array($field)) {
+            foreach ($field as $key => $value) {
+                $conditions[$key] = $value;
+            }
+        } else {
+            $conditions[$field] = $value;
+        }
+        return $this->db->getConnection()->get($this->tableName, "*", $conditions);
     }
 
     public function insert(array $data): ?array
@@ -56,6 +62,13 @@ class Table
             $id = $this->db->getConnection()->id();
         }
         return $this->load('id', $id);
+    }
+
+    public function delete(array $ids): void
+    {
+        if (count($ids)) {
+            $this->db->getConnection()->delete($this->tableName, ['id' => $ids]);
+        }
     }
 
     private function processSelectArgs($where, $columns, $join): array
