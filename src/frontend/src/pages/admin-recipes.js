@@ -7,23 +7,21 @@ import {
     getInsertOrUpdateRecipeMutation,
     getRecipeListQuery
 } from "query/admin";
-import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {List, ListItem, ListItemText, TextField} from '@mui/material';
 import DynamicRowsInput from "components/dynamic-rows-input";
 import {toast} from "react-toastify";
 import {search} from "util/algolia";
-import {ucwords} from "util/stdlib";
-
-dayjs.extend(relativeTime);
+import {formatPrice, getLocalTime, ucwords} from "util/stdlib";
 
 const AdminRecipes = props => {
     useAdminGuard();
 
     const rowMutator = row => {
         row.name = ucwords(row.name);
-        row.created_at = dayjs(row.created_at).fromNow();
-        row.updated_at = dayjs(row.updated_at).fromNow();
+        row.cost = formatPrice(row.cost);
+        row.created_at = getLocalTime(row.created_at).fromNow();
+        row.updated_at = getLocalTime(row.updated_at).fromNow();
         return row;
     }
 
@@ -33,7 +31,7 @@ const AdminRecipes = props => {
                 {ingredients.map((ingredient) => (
                     <ListItem key={ingredient.id} disablePadding>
                         <ListItemText
-                            primary={`• ${ingredient.name} - ${ingredient.qty} ${ingredient.qty_unit}`}
+                            primary={`• ${ucwords(ingredient.name)} - ${ingredient.qty} ${ingredient.qty_unit}`}
                             sx={{ ml: 1 }}
                         />
                     </ListItem>
@@ -124,7 +122,7 @@ const AdminRecipes = props => {
                 query={getRecipeListQuery}
                 innerQuery={_getRecipesQuery}
                 queryName={'adminGetRecipes'}
-                columns={['id', 'name', 'ingredients', 'created_at', 'updated_at']}
+                columns={['id', 'name', 'ingredients', 'cost', 'created_at', 'updated_at']}
                 rowMutator={ rowMutator }
                 columnRenderers={{ ingredients: ingredientsRenderer }}
                 AddNewItemForm={AddNewItemForm}

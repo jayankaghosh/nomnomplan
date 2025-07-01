@@ -116,7 +116,10 @@ const AdminGrid = ({
         setFormValues({});
         setIsAddNewPopupOpen(true);
     }
-    const onAddNewPopupClose = () => setIsAddNewPopupOpen(false);
+    const onAddNewPopupClose = (e, reason) => {
+        if (reason === 'backdropClick') return;
+        setIsAddNewPopupOpen(false);
+    }
 
     const onAddNewFormSubmit = async e => {
         e.preventDefault();
@@ -229,7 +232,12 @@ const AdminGrid = ({
                 </Button>
             </Box>
 
-            <Dialog open={isAddNewPopupOpen} onClose={onAddNewPopupClose} fullWidth maxWidth="sm">
+            <Dialog open={isAddNewPopupOpen}
+                    onClose={onAddNewPopupClose}
+                    fullWidth
+                    maxWidth="sm"
+                    disableEscapeKeyDown={true}
+            >
                 <DialogTitle>Add New Item</DialogTitle>
                 <Box component="form" onSubmit={onAddNewFormSubmit}>
                     <DialogContent dividers>

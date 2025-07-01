@@ -8,23 +8,19 @@ import {
     getIngredientListQuery,
     getInsertOrUpdateIngredientMutation
 } from "../query/admin";
-import dayjs from "dayjs";
-import relativeTime from 'dayjs/plugin/relativeTime';
 import {TextField, Select, MenuItem, FormControl, InputLabel} from "@mui/material";
-import {ucwords} from "util/stdlib";
-dayjs.extend(relativeTime);
+import {formatPrice, getLocalTime, ucwords} from "util/stdlib";
+import {getIngredientQtyUnits} from "util/config";
 
 const AdminIngredients = props => {
     useAdminGuard();
 
     const rowMutator = row => {
         row.is_veg = row.is_veg === '1' ? 'Yes' : 'No';
-        row.unit_price = new Intl.NumberFormat("en-US", { style: "currency", currency: "INR" }).format(
-            row.unit_price,
-        );
+        row.unit_price = formatPrice(row.unit_price);
         row.name = ucwords(row.name);
-        row.created_at = dayjs(row.created_at).fromNow();
-        row.updated_at = dayjs(row.updated_at).fromNow();
+        row.created_at = getLocalTime(row.created_at).fromNow();
+        row.updated_at = getLocalTime(row.updated_at).fromNow();
         return row;
     }
 
@@ -60,18 +56,13 @@ const AdminIngredients = props => {
                         defaultValue={formValues['qty_unit']}
                         required
                     >
-                        <MenuItem value="kg(s)">Kg(s)</MenuItem>
-                        <MenuItem value="gram(s)">gram(s)</MenuItem>
-                        <MenuItem value="mg">milligram(s)</MenuItem>
-                        <MenuItem value="lb">Pound(s)</MenuItem>
-                        <MenuItem value="piece">piece</MenuItem>
-                        <MenuItem value="ml">ml</MenuItem>
-                        <MenuItem value="l">Litre</MenuItem>
-                        <MenuItem value="tsp">Teaspoon</MenuItem>
-                        <MenuItem value="tbsp">Tablespoon</MenuItem>
-                        <MenuItem value="packet">Packet</MenuItem>
-                        <MenuItem value="slice">Slice</MenuItem>
-                        <MenuItem value="pinch">Pinch</MenuItem>
+                        {
+                            getIngredientQtyUnits().map(item => {
+                                return (
+                                    <MenuItem value={item}>{item}</MenuItem>
+                                )
+                            })
+                        }
                     </Select>
                 </FormControl>
                 <TextField
@@ -82,6 +73,7 @@ const AdminIngredients = props => {
                     margin="normal"
                     defaultValue={formValues['unit_price']}
                     required
+                    inputProps={{ step: "0.01" }}
                 />
             </>
         )

@@ -33,7 +33,12 @@ class AdminGetRecipes extends PaginatedList implements AdminResolverInterface
                 '[>]ingredient' => ['ingredient_id' => 'id']
             ]
         );
+        $totalCost = 0;
+        foreach ($ingredients as $ingredient) {
+            $totalCost += ($ingredient['unit_price'] * $ingredient['qty']);
+        }
         $item['ingredients'] = $ingredients;
+        $item['cost'] = $totalCost;
         return $item;
     }
 }

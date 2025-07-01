@@ -179,6 +179,7 @@ type Recipe implements PaginatedListItem {
   id: Int!
   name: String
   ingredients: [RecipeIngredient]
+  cost: Float
   created_at: String!
   updated_at: String!
 }
