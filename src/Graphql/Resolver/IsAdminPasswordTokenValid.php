@@ -3,10 +3,10 @@
 namespace JayankaGhosh\NomNomPlan\Graphql\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use JayankaGhosh\NomNomPlan\Graphql\AdminResolverInterface;
+use JayankaGhosh\NomNomPlan\Graphql\ResolverInterface;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
 
-class IsAdminPasswordTokenValid implements AdminResolverInterface
+class IsAdminPasswordTokenValid implements ResolverInterface
 {
 
     public function __construct(

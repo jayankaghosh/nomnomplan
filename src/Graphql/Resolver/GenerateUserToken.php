@@ -8,7 +8,7 @@ use JayankaGhosh\NomNomPlan\Graphql\ResolverInterface;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
 use JayankaGhosh\NomNomPlan\Util\Encryption;
 
-class GenerateAdminToken implements ResolverInterface
+class GenerateUserToken implements ResolverInterface
 {
 
     public function __construct(
@@ -27,15 +27,15 @@ class GenerateAdminToken implements ResolverInterface
     {
         $username = $args['username'] ?? null;
         $password = $args['password'] ?? null;
-        $adminModel = $this->tableFactory->create(['tableName' => 'admin_user']);
-        $adminTokenModel = $this->tableFactory->create(['tableName' => 'admin_token']);
-        $admin = $adminModel->load('email', $username);
-        if ($admin && $this->encryption->verifyHash($password, $admin['password_hash'])) {
+        $userModel = $this->tableFactory->create(['tableName' => 'user']);
+        $userTokenModel = $this->tableFactory->create(['tableName' => 'user_token']);
+        $user = $userModel->load('email', $username);
+        if ($user && !$user['is_blocked'] && $this->encryption->verifyHash($password, $user['password_hash'])) {
             do {
                 $token = $this->encryption->hash(uniqid());
-            } while ($adminTokenModel->load('token', $token));
-            $adminTokenModel->insert([
-                'admin_id' => $admin['id'],
+            } while ($userTokenModel->load('token', $token));
+            $userTokenModel->insert([
+                'user_id' => $user['id'],
                 'token' => $token
             ]);
             return [

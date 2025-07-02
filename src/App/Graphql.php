@@ -80,7 +80,20 @@ class Graphql implements AppInterface
 
     protected function getContext(): array
     {
-        return [];
+        $adminTokenTable = $this->tableFactory->create(['tableName' => 'admin_token']);
+        $adminToken = getallheaders()['Admin-Token'] ?? null;
+        $admin = !$adminTokenTable->load('token', $adminToken);
+
+        $userTokenTable = $this->tableFactory->create(['tableName' => 'user_token']);
+        $userToken = getallheaders()['Token'] ?? null;
+        $user = !$userTokenTable->load('token', $userToken);
+
+        $context = [
+            'user' => $user,
+            'admin' => $admin
+        ];
+
+        return $context;
     }
 
     protected function validateResolver(ResolverInterface $resolver): void

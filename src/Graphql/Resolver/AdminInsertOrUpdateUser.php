@@ -39,6 +39,7 @@ class AdminInsertOrUpdateUser implements AdminResolverInterface
         if (!isset($input['id']) && !$input['password']) {
             throw new InvalidArgumentException('Password is a required field');
         }
+        $input['is_blocked'] = $input['is_blocked'] ? 1 : 0;
         $password = null;
         if ($input['password']) {
             $password = $input['password'];

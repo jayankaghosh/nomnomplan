@@ -6,14 +6,15 @@ import {fetchData} from "util/api";
 import {getAdminToken, setAdminToken} from "util/auth";
 import {useNavigate} from "react-router-dom";
 import {ADMIN_DASHBOARD} from "pages/routes.config";
-import Loader from "../components/loader";
-import {useState} from "react";
+import Loader from "components/loader";
+import {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 
 const AdminLogin = props => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [token, setToken] = useState(getAdminToken());
 
     const handleSubmit = async e => {
         e.preventDefault();
@@ -25,6 +26,7 @@ const AdminLogin = props => {
                 password
             }, 'GenerateAdminToken');
             setAdminToken(token);
+            setToken(token);
         } catch ({ category, message }) {
             if (category === 'aborted') return;
             toast.error(message);
@@ -34,9 +36,11 @@ const AdminLogin = props => {
     };
 
     const navigate = useNavigate();
-    if (getAdminToken()) {
-        navigate(ADMIN_DASHBOARD);
-    }
+    useEffect(() => {
+        if (token) {
+            navigate(ADMIN_DASHBOARD);
+        }
+    }, [token]);
 
     return (
         <Container maxWidth="sm">

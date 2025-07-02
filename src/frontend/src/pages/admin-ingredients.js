@@ -1,13 +1,13 @@
 
 import AdminLayout from "layout/admin";
-import {useAdminGuard} from "hooks/useAdminGuard";
+import {useAdminGuard} from "util/hooks";
 import AdminGrid from "components/admin-grid";
 import {
     _getIngredientsQuery,
     getDeleteIngredientMutation,
     getIngredientListQuery,
     getInsertOrUpdateIngredientMutation
-} from "../query/admin";
+} from "query/admin";
 import {TextField, Select, MenuItem, FormControl, InputLabel} from "@mui/material";
 import {formatPrice, getLocalTime, ucwords} from "util/stdlib";
 import {getIngredientQtyUnits} from "util/config";

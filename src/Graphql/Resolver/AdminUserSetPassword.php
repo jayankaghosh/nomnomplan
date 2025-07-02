@@ -3,11 +3,11 @@
 namespace JayankaGhosh\NomNomPlan\Graphql\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use JayankaGhosh\NomNomPlan\Graphql\AdminResolverInterface;
+use JayankaGhosh\NomNomPlan\Graphql\ResolverInterface;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
 use JayankaGhosh\NomNomPlan\Util\Encryption;
 
-class AdminUserSetPassword implements AdminResolverInterface
+class AdminUserSetPassword implements ResolverInterface
 {
 
     public function __construct(

@@ -47,6 +47,12 @@ type Mutation {
   ): Token
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GenerateAdminToken")
 
+  generateUserToken(
+    username: String!
+    password: String!
+  ): Token
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GenerateUserToken")
+
   adminInsertOrUpdateIngredient(
     input: IngredientInput!
   ): Query
@@ -97,6 +103,7 @@ input UserInput {
   name: String!
   email: String!
   phone: String!
+  is_blocked: Boolean!
   password: String!
 }
 
@@ -226,6 +233,7 @@ type User implements PaginatedListItem {
   name: String
   email: String
   phone: String
+  is_blocked: String
   created_at: String!
   updated_at: String!
 }

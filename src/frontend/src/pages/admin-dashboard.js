@@ -1,6 +1,6 @@
 
 import AdminLayout from "layout/admin";
-import {useAdminGuard} from "hooks/useAdminGuard";
+import {useAdminGuard} from "util/hooks";
 
 const AdminDashboard = props => {
     useAdminGuard();

@@ -24,6 +24,8 @@ class DbSetup implements NonInterceptableInterface
         $this->createRecipeTable($connection);
         $this->createIngredientRecipeMapTable($connection);
         $this->createAdminAccessTokenTable($connection);
+        $this->createUserAccessTokenTable($connection);
+        $this->createUserScheduleTable($connection);
     }
 
     private function createAdminAccessTokenTable(Medoo $connection): void
@@ -70,6 +72,50 @@ class DbSetup implements NonInterceptableInterface
         }
     }
 
+    private function createUserAccessTokenTable(Medoo $connection): void
+    {
+        $table = 'user_token';
+        $tableExists = $this->db->tableExists($table);
+        $connection->create($table, [
+            "id" => [
+                "INT",
+                "NOT NULL",
+                "AUTO_INCREMENT",
+                "PRIMARY KEY"
+            ],
+            "user_id" => [
+                "INT",
+                "NOT NULL"
+            ],
+            "token" => [
+                "VARCHAR(100)",
+                "NOT NULL",
+                "UNIQUE"
+            ],
+            "created_at" => [
+                "DATETIME",
+                "NOT NULL",
+                "DEFAULT CURRENT_TIMESTAMP"
+            ],
+            "updated_at" => [
+                "DATETIME",
+                "NOT NULL",
+                "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+            ]
+        ], [
+            "ENGINE" => "InnoDB"
+        ]);
+
+        if (!$tableExists) {
+            $connection->query("
+            ALTER TABLE $table
+            ADD CONSTRAINT fk_token_user_token_user_id
+                FOREIGN KEY (user_id) REFERENCES user(id)
+                ON DELETE CASCADE
+        ");
+        }
+    }
+
     private function createUserTable(Medoo $connection): void
     {
         $connection->create('user', [
@@ -92,6 +138,11 @@ class DbSetup implements NonInterceptableInterface
                 "VARCHAR(20)",
                 "NOT NULL",
                 "UNIQUE"
+            ],
+            "is_blocked" => [
+                "TINYINT(1)",
+                "NOT NULL",
+                "DEFAULT 0"
             ],
             "password_hash" => [
                 "VARCHAR(300)",
@@ -271,4 +322,58 @@ class DbSetup implements NonInterceptableInterface
         ");
         }
     }
+
+    private function createUserScheduleTable(Medoo $connection): void
+    {
+        $table = 'user_schedule';
+        $tableExists = $this->db->tableExists($table);
+
+        $connection->create($table, [
+            "id" => [
+                "INT",
+                "NOT NULL",
+                "AUTO_INCREMENT",
+                "PRIMARY KEY"
+            ],
+            "user_id" => [
+                "INT",
+                "NOT NULL"
+            ],
+            "recipe_id" => [
+                "INT",
+                "NOT NULL"
+            ],
+            "number_of_people" => [
+                "INT",
+                "NOT NULL"
+            ],
+            "created_at" => [
+                "DATETIME",
+                "NOT NULL",
+                "DEFAULT CURRENT_TIMESTAMP"
+            ],
+            "updated_at" => [
+                "DATETIME",
+                "NOT NULL",
+                "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+            ]
+        ], [
+            "ENGINE" => "InnoDB"
+        ]);
+
+        if (!$tableExists) {
+            $connection->query("
+            ALTER TABLE $table
+            ADD CONSTRAINT fk_user_schedule_user
+                FOREIGN KEY (user_id) REFERENCES user(id)
+                ON DELETE CASCADE
+                ON UPDATE CASCADE,
+            ADD CONSTRAINT fk_user_schedule_recipe
+                FOREIGN KEY (recipe_id) REFERENCES recipe(id)
+                ON DELETE CASCADE
+                ON UPDATE CASCADE
+        ");
+        }
+    }
+
 }

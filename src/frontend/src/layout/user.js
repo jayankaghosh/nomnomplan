@@ -1,25 +1,20 @@
 import {
     Box,
     Drawer,
-    List,
-    ListItem,
-    ListItemText,
     Toolbar,
     AppBar,
     Typography,
     IconButton,
     Divider,
 } from '@mui/material';
-import { Menu, ChevronLeft } from '@mui/icons-material';
+import { Menu } from '@mui/icons-material';
 import { useState } from 'react';
-import AdminMenu from "components/admin-menu";
+import UserMenu from 'components/user-menu';
 
 const drawerWidth = 240;
-const collapsedWidth = 60;
 
-
-const AdminLayout = ({ title, children }) => {
-    const [drawerOpen, setDrawerOpen] = useState(true);
+const UserLayout = ({ title, children }) => {
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const handleDrawerToggle = () => {
         setDrawerOpen(!drawerOpen);
@@ -36,37 +31,31 @@ const AdminLayout = ({ title, children }) => {
                         onClick={handleDrawerToggle}
                         sx={{ mr: 2 }}
                     >
-                        {drawerOpen ? <ChevronLeft /> : <Menu />}
+                        <Menu />
                     </IconButton>
                     <Typography variant="h6" noWrap>
-                        NomNomPlan Admin {title ? ` / ${title}` : ''}
+                        NomNomPlan {title ? ` / ${title}` : ''}
                     </Typography>
                 </Toolbar>
             </AppBar>
 
-            {/* Drawer */}
+            {/* Drawer with overlay */}
             <Drawer
-                variant="permanent"
+                variant="temporary"
+                open={drawerOpen}
+                onClose={handleDrawerToggle}
+                ModalProps={{
+                    keepMounted: true, // Better open performance on mobile
+                }}
                 sx={{
-                    width: drawerOpen ? drawerWidth : collapsedWidth,
-                    flexShrink: 0,
-                    whiteSpace: 'nowrap',
-                    boxSizing: 'border-box',
                     '& .MuiDrawer-paper': {
-                        width: drawerOpen ? drawerWidth : collapsedWidth,
-                        transition: (theme) =>
-                            theme.transitions.create('width', {
-                                easing: theme.transitions.easing.sharp,
-                                duration: theme.transitions.duration.standard,
-                            }),
-                        overflowX: 'hidden',
+                        width: drawerWidth,
                     },
                 }}
-                open={drawerOpen}
             >
                 <Toolbar />
                 <Divider />
-                <AdminMenu drawerOpen={drawerOpen} />
+                <UserMenu drawerOpen={drawerOpen} />
             </Drawer>
 
             {/* Main Content */}
@@ -75,7 +64,6 @@ const AdminLayout = ({ title, children }) => {
                 sx={{
                     flexGrow: 1,
                     p: 3,
-                    transition: 'margin 0.3s',
                 }}
             >
                 <Toolbar />
@@ -85,4 +73,4 @@ const AdminLayout = ({ title, children }) => {
     );
 };
 
-export default AdminLayout;
+export default UserLayout;
