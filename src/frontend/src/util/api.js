@@ -1,5 +1,5 @@
-import {getAdminToken, getUserToken} from "util/auth";
-import {ADMIN_LOGIN} from "pages/routes.config";
+import {getAdminToken, getUserToken, setAdminToken, setUserToken} from "util/auth";
+import {ADMIN_DASHBOARD, ADMIN_LOGIN, LOGIN} from "pages/routes.config";
 
 const uri = '/graphql';
 const controllers = {};
@@ -20,8 +20,16 @@ const getRequestHeaders = () => {
 const processException = category => {
     return new Promise((resolve, reject) => {
         if (category === 'authentication') {
+            let targetUrl;
+            if (window.location.pathname.startsWith(ADMIN_DASHBOARD)) {
+                setAdminToken(null);
+                targetUrl = ADMIN_LOGIN;
+            } else {
+                setUserToken(null);
+                targetUrl = LOGIN
+            }
             resolve();
-            window.location.href = ADMIN_LOGIN;
+            window.location.href = targetUrl;
         }
         reject();
     });

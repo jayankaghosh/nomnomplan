@@ -3,9 +3,19 @@
 namespace JayankaGhosh\NomNomPlan\Graphql\Resolver;
 
 use JayankaGhosh\NomNomPlan\Graphql\AdminResolverInterface;
+use JayankaGhosh\NomNomPlan\Model\TableFactory;
+use JayankaGhosh\NomNomPlan\Util\Recipe;
 
 class AdminGetRecipes extends PaginatedList implements AdminResolverInterface
 {
+
+    public function __construct(
+        TableFactory $tableFactory,
+        private readonly Recipe $recipeUtil,
+    )
+    {
+        parent::__construct($tableFactory);
+    }
 
     protected function getTable(): string
     {
@@ -14,31 +24,6 @@ class AdminGetRecipes extends PaginatedList implements AdminResolverInterface
 
     protected function prepareItem(array $item): array
     {
-        $table = $this->tableFactory->create(['tableName' => 'recipe_ingredient']);
-        $ingredients = $table->select(
-            [
-                'recipe_ingredient.recipe_id' => $item['id']
-            ],
-            [
-                'ingredient.id',
-                'ingredient.name',
-                'ingredient.is_veg',
-                'ingredient.qty_unit',
-                'ingredient.unit_price',
-                'ingredient.created_at',
-                'ingredient.updated_at',
-                'recipe_ingredient.ingredient_qty(qty)'
-            ],
-            [
-                '[>]ingredient' => ['ingredient_id' => 'id']
-            ]
-        );
-        $totalCost = 0;
-        foreach ($ingredients as $ingredient) {
-            $totalCost += ($ingredient['unit_price'] * $ingredient['qty']);
-        }
-        $item['ingredients'] = $ingredients;
-        $item['cost'] = $totalCost;
-        return $item;
+        return $this->recipeUtil->prepareData($item);
     }
 }

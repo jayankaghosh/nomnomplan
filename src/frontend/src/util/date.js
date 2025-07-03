@@ -1,25 +1,31 @@
+import dayjs from 'dayjs';
 
-export const getWeeksInMonth = (year, month) => {
+export function getWeeksInMonth(year, monthIndex) {
+    const startOfMonth = dayjs(new Date(year, monthIndex, 1));
+    const endOfMonth = startOfMonth.endOf('month');
+
+    const startDate = startOfMonth.startOf('week'); // Sunday
+    const endDate = endOfMonth.endOf('week');       // Saturday
+
     const weeks = [];
-    const date = new Date(year, month, 1);
-    const lastDate = new Date(year, month + 1, 0).getDate();
-
+    let current = startDate;
     let weekIndex = 1;
-    let currentWeek = [];
 
-    for (let day = 1; day <= lastDate; day++) {
-        const currentDate = new Date(year, month, day);
-        currentWeek.push(currentDate);
-
-        // If Saturday or last day of month, close the current week
-        if (currentDate.getDay() === 6 || day === lastDate) {
-            weeks.push({
-                label: `Week ${weekIndex++}`,
-                days: currentWeek
+    while (current.isBefore(endDate) || current.isSame(endDate, 'day')) {
+        const week = [];
+        for (let i = 0; i < 7; i++) {
+            week.push({
+                isActive: current.month() === monthIndex,
+                date: current.toDate()
             });
-            currentWeek = [];
+            current = current.add(1, 'day');
         }
+
+        weeks.push({
+            label: `Week ${weekIndex++}`,
+            days: week
+        });
     }
 
     return weeks;
-};
+}

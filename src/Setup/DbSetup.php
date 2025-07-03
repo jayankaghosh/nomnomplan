@@ -347,6 +347,14 @@ class DbSetup implements NonInterceptableInterface
                 "INT",
                 "NOT NULL"
             ],
+            "date" => [
+                "DATE",
+                "NOT NULL"
+            ],
+            "slot" => [
+                "VARCHAR(50)",
+                "NOT NULL"
+            ],
             "created_at" => [
                 "DATETIME",
                 "NOT NULL",

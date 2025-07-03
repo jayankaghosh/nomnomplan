@@ -16,28 +16,34 @@ const Calendar = ({
     const columnWidth = isMobile ? '40%' : '1fr';
 
     return (
-        <Box sx={{ overflowX: 'auto', p: 2 }}>
+        <Box sx={{ width: 'calc(100vw - (2*40px))', overflowX: 'auto' }}>
             <Box
                 sx={{
                     display: 'grid',
                     gridTemplateColumns: `repeat(${days.length}, ${columnWidth})`,
                     gap: 1,
-                    minWidth: isMobile ? 'unset' : '700px',
+                    minWidth: columnWidth,
                 }}
             >
-                {days.map((day) => (
-                    <Box key={day}>
+                {days.map(({ isActive, date: day }) => (
+                    <Box
+                        key={day}
+                        sx={{
+                            pointerEvents: isActive ? 'auto' : 'none',
+                            opacity: isActive ? 'inherit' : '0.3',
+                        }}
+                    >
                         <Typography
                             variant="subtitle1"
                             align="center"
                             sx={{ mb: 1, fontWeight: 600, textTransform: 'uppercase' }}
                         >
-                            { dayjs(day).format('Do (dddd)') }
+                            { dayjs(day).format('Do (ddd)') }
                         </Typography>
                         {
                             timeSlots.map((slot) => {
                                 const {
-                                    isActive = false,
+                                    isSelected = false,
                                     label = slot
                                 } = processSlot(slot, day);
 
@@ -55,10 +61,10 @@ const Calendar = ({
                                             textAlign: 'center',
                                             fontSize: '0.9rem',
                                             cursor: 'pointer',
-                                            backgroundColor: isActive ? 'primary.main' : 'background.paper',
-                                            color: isActive ? 'primary.contrastText' : 'text.primary',
+                                            backgroundColor: isSelected ? 'primary.main' : 'background.paper',
+                                            color: isSelected ? 'primary.contrastText' : 'text.primary',
                                             border: '1px solid',
-                                            borderColor: isActive ? 'primary.dark' : 'divider',
+                                            borderColor: isSelected ? 'primary.dark' : 'divider',
                                         }}
                                         onClick={() => onSlotClick(slot, day)}
                                     >

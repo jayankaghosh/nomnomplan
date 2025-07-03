@@ -4,6 +4,7 @@ namespace JayankaGhosh\NomNomPlan\Console;
 
 use Algolia\AlgoliaSearch\Api\SearchClient;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
+use JayankaGhosh\NomNomPlan\Util\Recipe;
 use Om\DependencyInjection\NonInterceptableInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,6 +14,7 @@ class AlgoliaIndex extends Command implements NonInterceptableInterface
 {
     public function __construct(
         private readonly TableFactory $tableFactory,
+        private readonly Recipe $recipeUtil,
         ?string $name = null
     )
     {
@@ -37,26 +39,7 @@ class AlgoliaIndex extends Command implements NonInterceptableInterface
 
     private function prepareRecipe(array $recipe): array
     {
-        $table = $this->tableFactory->create(['tableName' => 'recipe_ingredient']);
-        $ingredients = $table->select(
-            [
-                'recipe_ingredient.recipe_id' => $recipe['id']
-            ],
-            [
-                'ingredient.id',
-                'ingredient.name',
-                'ingredient.is_veg',
-                'ingredient.qty_unit',
-                'ingredient.created_at',
-                'ingredient.updated_at',
-                'recipe_ingredient.ingredient_qty(qty)'
-            ],
-            [
-                '[>]ingredient' => ['ingredient_id' => 'id']
-            ]
-        );
-        $recipe['ingredients'] = $ingredients;
-        return $recipe;
+        return $this->recipeUtil->prepareData($recipe);
     }
 
     private function indexByPage(string $tableName, int $pageSize = 500, ?\Closure $handler = null): void

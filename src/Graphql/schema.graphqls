@@ -31,6 +31,13 @@ type Query {
   ): UserList
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminGetUsers")
 
+  """Get list of selected recipes in the time period"""
+  getRecipeSchedule(
+    from: String!
+    to: String!
+  ): RecipeScheduleOutput!
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\GetRecipeSchedule")
+
 }
 
 type Mutation {
@@ -245,6 +252,31 @@ type RecipeIngredient implements PaginatedListItem {
   qty_unit: String
   unit_price: Float
   qty: Float
+  created_at: String!
+  updated_at: String!
+}
+
+enum RecipeScheduleSlotEnum {
+  MORNING
+  AFTERNOON
+  EVENING
+  NIGHT
+}
+
+type RecipeScheduleOutput {
+  schedule: [RecipeSchedule]!
+}
+
+type RecipeSchedule {
+  date: String!
+  slots: [RecipeScheduleSlot]
+}
+
+type RecipeScheduleSlot {
+  id: Int!
+  slot: RecipeScheduleSlotEnum!
+  recipe: Recipe!
+  number_of_people: Int!
   created_at: String!
   updated_at: String!
 }

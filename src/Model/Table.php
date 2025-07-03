@@ -18,6 +18,11 @@ class Table
         return $this->db->getConnection();
     }
 
+    public function log(): array
+    {
+        return $this->getConnection()->log();
+    }
+
     public function select(
         array $where,
         ?array $columns = null,

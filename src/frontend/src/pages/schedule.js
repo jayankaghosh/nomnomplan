@@ -55,7 +55,7 @@ const Schedule = props => {
 
     const processSlot = (slot, day) => {
         return {
-            isActive: false,
+            isSelected: false,
             label: slot
         }
     }
@@ -124,7 +124,6 @@ const Schedule = props => {
                     </Select>
                 </FormControl>
             </Box>
-
             {
                 weeks.map(({ label, days }) => {
                     return (
@@ -133,14 +132,12 @@ const Schedule = props => {
                                 <Typography>{ label }</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Typography>
-                                    <Calendar
-                                        days={days}
-                                        timeSlots={['Morning', 'Afternoon', 'Evening', 'Night']}
-                                        processSlot={processSlot}
-                                        onSlotClick={onSlotClick}
-                                    />
-                                </Typography>
+                                <Calendar
+                                    days={days}
+                                    timeSlots={['MORNING', 'AFTERNOON', 'EVENING', 'NIGHT']}
+                                    processSlot={processSlot}
+                                    onSlotClick={onSlotClick}
+                                />
                             </AccordionDetails>
                         </Accordion>
                     )

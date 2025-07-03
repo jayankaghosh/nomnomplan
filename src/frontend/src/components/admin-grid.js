@@ -182,7 +182,6 @@ const AdminGrid = ({
                 id: row.id
             }
             const {response: {[queryName]: response}} = await fetchData(deleteQuery(), variables);
-            console.log(response);
             setData(response);
         } catch ({ category, message }) {
             if (category === 'aborted') return;
