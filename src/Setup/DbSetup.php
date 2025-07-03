@@ -379,7 +379,8 @@ class DbSetup implements NonInterceptableInterface
             ADD CONSTRAINT fk_user_schedule_recipe
                 FOREIGN KEY (recipe_id) REFERENCES recipe(id)
                 ON DELETE CASCADE
-                ON UPDATE CASCADE
+                ON UPDATE CASCADE,
+            ADD CONSTRAINT uniq_date_slot UNIQUE (date, slot)
         ");
         }
     }

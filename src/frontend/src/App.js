@@ -1,7 +1,7 @@
-import React, { createContext, useMemo, useState, useContext } from 'react';
+import React, {createContext, useMemo, useState, useContext, useEffect} from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import AppRouter from './pages/router';
+import AppRouter from 'pages/router';
 import { ToastContainer } from 'react-toastify';
 
 import '@fontsource/roboto/300.css';
@@ -44,6 +44,17 @@ function App() {
         }),
         [themeMode]
     );
+
+    useEffect(() => {
+        document.body.style.backgroundColor = theme.palette.background.default;
+        document.body.style.color = theme.palette.text.primary;
+
+        return () => {
+            document.body.style.backgroundColor = '';
+            document.body.style.color = '';
+        };
+    }, [theme]);
+
     return (
         <div className="App">
             <ToastContainer

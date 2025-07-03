@@ -89,6 +89,15 @@ type Mutation {
     id: Int!
   ): Query
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\AdminDeleteUser")
+
+  """Set recipe schedule for a specific date and slot"""
+  setRecipeSchedule(
+    recipe_id: Int!
+    number_of_people: Int!
+    date: String!
+    slot: RecipeScheduleSlotEnum!
+  ): Query
+  @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\SetRecipeSchedule")
 }
 
 input IngredientInput {
@@ -269,7 +278,7 @@ type RecipeScheduleOutput {
 
 type RecipeSchedule {
   date: String!
-  slots: [RecipeScheduleSlot]
+  slots: [RecipeScheduleSlot]!
 }
 
 type RecipeScheduleSlot {

@@ -81,12 +81,16 @@ class Graphql implements AppInterface
     protected function getContext(): array
     {
         $adminTokenTable = $this->tableFactory->create(['tableName' => 'admin_token']);
+        $adminTable = $this->tableFactory->create(['tableName' => 'admin_user']);
         $adminToken = getallheaders()['Admin-Token'] ?? null;
-        $admin = $adminTokenTable->load('token', $adminToken);
+        $adminTokenModel = $adminTokenTable->load('token', $adminToken);
+        $admin = $adminTokenModel ? $adminTable->load('id', $adminTokenModel['admin_id']) : null;
 
         $userTokenTable = $this->tableFactory->create(['tableName' => 'user_token']);
+        $userTable = $this->tableFactory->create(['tableName' => 'user']);
         $userToken = getallheaders()['Token'] ?? null;
-        $user = $userTokenTable->load('token', $userToken);
+        $userTokenModel = $userTokenTable->load('token', $userToken);
+        $user = $userTokenModel ? $userTable->load('id', $userTokenModel['user_id']) : null;
 
         return [
             'user' => $user,

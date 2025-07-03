@@ -10,12 +10,17 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
-    Typography
+    Typography,
+    Paper,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {useEffect, useState} from "react";
 import {getWeeksInMonth} from "util/date";
 import dayjs from 'dayjs';
+import {fetchData} from "util/api";
+import {getRecipeScheduleQuery} from "query/user";
+import Loader from "../components/loader";
+import {toast} from "react-toastify";
 
 const Schedule = props => {
     useUserGuard();
@@ -27,6 +32,8 @@ const Schedule = props => {
         month: currentMonth
     });
     const [weeks, setWeeks] = useState([]);
+    const [schedule, setSchedule] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const years = Array.from({ length: 22 }, (_, i) => currentYear - 20 + i);
     const months = Array.from({ length: 12 }, (_, i) => dayjs().month(i).format('MMMM'));
@@ -34,6 +41,21 @@ const Schedule = props => {
     useEffect(() => {
         const { year, month } = selectedYearAndMonth;
         const currentWeeks = getWeeksInMonth(year, month);
+        const from = dayjs(new Date(year, month, 1)).format('YYYY-MM-DD');
+        const to = dayjs(new Date(year, month + 1, 0)).format('YYYY-MM-DD');
+        const fetchRecipeSchedule = async () => {
+            try {
+                setIsLoading(true);
+                const {getRecipeSchedule: {schedule}} = await fetchData(getRecipeScheduleQuery(), {from, to});
+                setSchedule(schedule);
+            } catch ({ category, message }) {
+                if (category === 'aborted') return;
+                toast.error(message);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchRecipeSchedule();
         setWeeks(currentWeeks);
     }, [
         selectedYearAndMonth
@@ -54,9 +76,37 @@ const Schedule = props => {
     }
 
     const processSlot = (slot, day) => {
+        day = dayjs(day).format('YYYY-MM-DD');
+        const { slots = [] } = schedule.find(({ date }) => date === day) || {};
+        const currentSlot = slots.find(item => item.slot === slot);
+        let slotLabel;
+        if (currentSlot) {
+            const { recipe: { name }, number_of_people } = currentSlot;
+            console.log(currentSlot)
+            slotLabel = (
+                <Box
+                    elevation={3}
+                    sx={{
+                        p: 2,
+                        textAlign: 'center',
+                        minHeight: 100,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center'
+                    }}
+                >
+                    <Typography variant="h6">{slot}</Typography>
+                    <Typography variant="body2">
+                        {`${name} for ${number_of_people}`.toUpperCase()}
+                    </Typography>
+                </Box>
+            );
+        } else {
+            slotLabel = <span>{slot}</span>;
+        }
         return {
-            isSelected: false,
-            label: slot
+            isSelected: !!currentSlot,
+            label: slotLabel
         }
     }
 
@@ -67,6 +117,7 @@ const Schedule = props => {
 
     return (
         <UserLayout>
+            <Loader isLoading={isLoading} />
             <Box
                 sx={{
                     display: 'flex',

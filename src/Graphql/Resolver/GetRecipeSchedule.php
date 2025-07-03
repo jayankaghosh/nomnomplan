@@ -20,7 +20,7 @@ class GetRecipeSchedule implements ResolverInterface
 
     public function resolve(array $args, array $context, array $root, ResolveInfo $info): array
     {
-        $loggedInUserId = $context['user']['user_id'] ?? null;
+        $loggedInUserId = $context['user']['id'] ?? null;
         if (!$loggedInUserId) {
             throw new AuthenticationException('Access denied');
         }

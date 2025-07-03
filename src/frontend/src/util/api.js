@@ -11,7 +11,7 @@ const getRequestHeaders = () => {
         headers['Admin-Token'] = adminToken;
     }
     const userToken = getUserToken();
-    if (adminToken) {
+    if (userToken) {
         headers['Token'] = userToken;
     }
     return headers;
