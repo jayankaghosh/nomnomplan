@@ -40,7 +40,6 @@ export const _getRecipesQuery = (variableName) => {
                 created_at
                 updated_at
               }
-              cost
               created_at
               updated_at
             }

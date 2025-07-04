@@ -30,16 +30,20 @@ class SetRecipeSchedule implements ResolverInterface
         if (!$recipe) {
             throw new NotFoundException(sprintf('Recipe with ID %s not found', $recipeId));
         }
+        $id = $args['id'] ?? null;
         $numberOfPeople = $args['number_of_people'];
         $date = $args['date'];
         $slot = $args['slot'];
 
-
-        $existingRow = $userScheduleTable->select([
-            'user_id' => $loggedInUserId,
-            'date' => $date,
-            'slot' => $slot
-        ]);
+        $existingRow = null;
+        if ($id) {
+            $existingRow = $userScheduleTable->select([
+                'id' => $id
+            ]);
+            if ($existingRow && $existingRow['user_id'] !== $loggedInUserId) {
+                throw new AuthenticationException('Access denied');
+            }
+        }
 
         $data = [
             'recipe_id' => $recipeId,

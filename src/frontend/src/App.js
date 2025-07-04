@@ -10,9 +10,15 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import './App.css';
+import ThemeToggle from "components/theme-toggle";
+import {getData, setData} from "util/local-storage";
 
 function App() {
-    const [themeMode, setThemeMode] = useState('dark');
+    const LOCAL_STORAGE_KEY = 'theme_mode';
+    const checkIsDarkSchemePreferred = () => window?.matchMedia?.('(prefers-color-scheme:dark)')?.matches ?? false;
+    const [themeMode, setThemeMode] = useState(
+        getData(LOCAL_STORAGE_KEY) || (checkIsDarkSchemePreferred() ? 'dark' : 'light')
+    );
     const theme = useMemo(() =>
         createTheme({
             palette: {
@@ -45,6 +51,12 @@ function App() {
         [themeMode]
     );
 
+    const toggleTheme = () => {
+        const newTheme = themeMode === 'dark' ? 'light': 'dark';
+        setThemeMode(newTheme);
+        setData(LOCAL_STORAGE_KEY, newTheme);
+    }
+
     useEffect(() => {
         document.body.style.backgroundColor = theme.palette.background.default;
         document.body.style.color = theme.palette.text.primary;
@@ -60,6 +72,10 @@ function App() {
             <ToastContainer
                 position={'bottom-right'}
                 theme={'dark'}
+            />
+            <ThemeToggle
+                toggleTheme={toggleTheme}
+                themeMode={themeMode}
             />
             <ThemeProvider theme={theme}>
                 <BrowserRouter>

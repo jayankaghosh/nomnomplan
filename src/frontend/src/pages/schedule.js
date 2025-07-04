@@ -81,8 +81,8 @@ const Schedule = props => {
         const currentSlot = slots.find(item => item.slot === slot);
         let slotLabel;
         if (currentSlot) {
-            const { recipe: { name }, number_of_people } = currentSlot;
-            console.log(currentSlot)
+            const { slot, recipes } = currentSlot;
+            let highestNumberOfPeople = Math.max(...recipes.map(recipe => recipe.number_of_people));
             slotLabel = (
                 <Box
                     elevation={3}
@@ -97,7 +97,7 @@ const Schedule = props => {
                 >
                     <Typography variant="h6">{slot}</Typography>
                     <Typography variant="body2">
-                        {`${name} for ${number_of_people}`.toUpperCase()}
+                        {`${recipes.length} recipes for ${highestNumberOfPeople} people`.toUpperCase()}
                     </Typography>
                 </Box>
             );
