@@ -25,38 +25,46 @@ class SetRecipeSchedule implements ResolverInterface
         }
         $userScheduleTable = $this->tableFactory->create(['tableName' => 'user_schedule']);
         $recipeTable = $this->tableFactory->create(['tableName' => 'recipe']);
-        $recipeId = $args['recipe_id'];
-        $recipe = $recipeTable->load('id', $recipeId);
-        if (!$recipe) {
-            throw new NotFoundException(sprintf('Recipe with ID %s not found', $recipeId));
-        }
-        $id = $args['id'] ?? null;
-        $numberOfPeople = $args['number_of_people'];
         $date = $args['date'];
         $slot = $args['slot'];
-
-        $existingRow = null;
-        if ($id) {
-            $existingRow = $userScheduleTable->select([
-                'id' => $id
-            ]);
-            if ($existingRow && $existingRow['user_id'] !== $loggedInUserId) {
-                throw new AuthenticationException('Access denied');
+        $recipes = $args['recipe_schedule'];
+        $addedIds = [];
+        foreach ($recipes as $recipeInput) {
+            $recipeId = $recipeInput['recipe_id'];
+            $recipe = $recipeTable->load('id', $recipeId);
+            if (!$recipe) {
+                throw new NotFoundException(sprintf('Recipe with ID %s not found', $recipeId));
             }
-        }
+            $id = $recipeInput['id'] ?? null;
+            $numberOfPeople = $recipeInput['number_of_people'];
 
-        $data = [
-            'recipe_id' => $recipeId,
+            $existingRow = null;
+            if ($id) {
+                $existingRow = $userScheduleTable->load('id', $id);
+                if ($existingRow && $existingRow['user_id'] !== $loggedInUserId) {
+                    throw new AuthenticationException('Access denied');
+                }
+            }
+
+            $data = [
+                'recipe_id' => $recipeId,
+                'user_id' => $loggedInUserId,
+                'date' => $date,
+                'slot' => $slot,
+                'number_of_people' => $numberOfPeople
+            ];
+
+            if ($existingRow) {
+                $data['id'] = $existingRow['id'];
+            }
+            $addedIds[] = $userScheduleTable->insert($data)['id'];
+        }
+        $userScheduleTable->rawDelete([
             'user_id' => $loggedInUserId,
             'date' => $date,
             'slot' => $slot,
-            'number_of_people' => $numberOfPeople
-        ];
-
-        if ($existingRow) {
-            $date['id'] = $existingRow['id'];
-        }
-        $userScheduleTable->insert($data);
+            'id[!]' => $addedIds
+        ]);
         return [];
     }
 }

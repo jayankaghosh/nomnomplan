@@ -24,7 +24,7 @@ export const useDebounce = (value, delay = 500) => {
 };
 
 export const ucwords = str => {
-    return str.replace(/\b\w/g, char => char.toUpperCase());
+    return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
 }
 
 export const getLocalTime = utc => {

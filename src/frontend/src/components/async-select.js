@@ -49,15 +49,18 @@ const AsyncSelect = ({
         );
     }
 
+    console.log(options);
+
     return (
         <Autocomplete
             options={options}
             getOptionLabel={(option) => option.label || ''}
             value={null}
-            onChange={(e, newValue) => onChange(newValue?.value || '')}
+            onChange={(e, newValue) => onChange(options.find(o => o.value === (newValue?.value || '')))}
             inputValue={inputValue}
             onInputChange={(e, newInput) => setInputValue(newInput)}
             loading={loading}
+            filterOptions={(x) => x}
             renderInput={(params) => (
                 <TextField
                     {...params}

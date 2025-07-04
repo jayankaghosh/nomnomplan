@@ -46,35 +46,43 @@ export const getRecipeScheduleQuery = () => {
 export const getSetRecipeScheduleMutation = () => {
     return `
         mutation SetRecipeSchedule(
-          $recipe_id: Int!,
-          $number_of_people: Int!,
+          $recipe_schedule: [RecipeScheduleInput]!,
           $date: String!,
           $slot: RecipeScheduleSlotEnum!,
           $from: String!,
           $to: String!
         ) {
           setRecipeSchedule(
-            recipe_id: $recipe_id,
-            number_of_people: $number_of_people,
+            recipe_schedule: $recipe_schedule,
             date: $date,
             slot: $slot
           ) {
             response: getRecipeSchedule(from: $from, to: $to) {
-              schedule {
-                date
-                slots {
-                  id
-                  slot
-                  recipe {
-                    id
-                    name
+                schedule {
+                  date
+                  slots {
+                    slot
+                    recipes {
+                      id
+                      cost
+                      recipe {
+                        id
+                        name
+                        ingredients {
+                            id
+                            name
+                            qty
+                            qty_unit
+                            unit_price
+                        }
+                      }
+                      number_of_people
+                      created_at
+                      updated_at
+                    }
                   }
-                  number_of_people
-                  created_at
-                  updated_at
                 }
-              }
-            }
+            } 
           }
         }    
     `;

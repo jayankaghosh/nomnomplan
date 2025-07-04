@@ -30,6 +30,7 @@ export const _getRecipesQuery = (variableName) => {
             items {
               id
               name
+              cost
               ingredients {
                 id
                 name

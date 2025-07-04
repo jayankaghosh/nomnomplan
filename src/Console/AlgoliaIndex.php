@@ -30,8 +30,22 @@ class AlgoliaIndex extends Command implements NonInterceptableInterface
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<info>Starting indexing...</info>');
-        $this->indexByPage('ingredient');
-        $this->indexByPage('recipe', 500, $this->prepareRecipe(...));
+        $this->indexByPage(
+            'ingredient',
+            [
+                'name',
+                'qty_unit',
+            ]
+        );
+        $this->indexByPage(
+            'recipe',
+            [
+                'name',
+                'ingredients.name'
+            ],
+            500,
+            $this->prepareRecipe(...)
+        );
         $output->writeln('<info>Indexing completed successfully</info>');
         return self::SUCCESS;
     }
@@ -42,7 +56,12 @@ class AlgoliaIndex extends Command implements NonInterceptableInterface
         return $this->recipeUtil->prepareData($recipe);
     }
 
-    private function indexByPage(string $tableName, int $pageSize = 500, ?\Closure $handler = null): void
+    private function indexByPage(
+        string $tableName,
+        array $searchableAttributes = [],
+        int $pageSize = 500,
+        ?\Closure $handler = null
+    ): void
     {
         $table = $this->tableFactory->create(['tableName' => $tableName]);
         $count = $table->count([]);
@@ -60,6 +79,16 @@ class AlgoliaIndex extends Command implements NonInterceptableInterface
                 $data[] = $row;
             }
             $client = SearchClient::create($_ENV['ALGOLIA_APP_ID'], $_ENV['ALGOLIA_API_KEY']);
+            foreach ($searchableAttributes as &$searchableAttribute) {
+                $searchableAttribute = sprintf('unordered(%s)', $searchableAttribute);
+            }
+            $client->setSettings(
+                $tableName . '_index',
+                [
+                    'searchableAttributes' => $searchableAttributes,
+                    'attributesForFaceting' => []
+                ]
+            );
             $client->saveObjects(
                 $tableName . '_index',
                 $data,

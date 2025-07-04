@@ -12,15 +12,27 @@ import {
     AccordionDetails,
     Typography,
     Paper,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    Dialog, IconButton, TextField, Grid,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {getWeeksInMonth} from "util/date";
 import dayjs from 'dayjs';
 import {fetchData} from "util/api";
-import {getRecipeScheduleQuery} from "query/user";
-import Loader from "../components/loader";
+import {getRecipeScheduleQuery, getSetRecipeScheduleMutation} from "query/user";
+import Loader from "components/loader";
 import {toast} from "react-toastify";
+import CloseIcon from '@mui/icons-material/Close';
+import {ucwords} from "util/stdlib";
+import {search} from "util/algolia";
+import {extractFormData} from "util/form";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AsyncSelect from "components/async-select";
+
 
 const Schedule = props => {
     useUserGuard();
@@ -33,7 +45,9 @@ const Schedule = props => {
     });
     const [weeks, setWeeks] = useState([]);
     const [schedule, setSchedule] = useState([]);
+    const [selectedSlot, setSelectedSlot] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const [isSchedulePopupOpen, setIsSchedulePopupOpen] = useState(false);
 
     const years = Array.from({ length: 22 }, (_, i) => currentYear - 20 + i);
     const months = Array.from({ length: 12 }, (_, i) => dayjs().month(i).format('MMMM'));
@@ -111,13 +125,214 @@ const Schedule = props => {
     }
 
     const onSlotClick = (slot, day) => {
-        console.log(slot, dayjs(day));
+        setIsSchedulePopupOpen(true);
+        const selectedDay = schedule.find(item => item.date === dayjs(day).format('YYYY-MM-DD'));
+        const selectedSlotData = {
+            slot,
+            day,
+            recipes: []
+        }
+        if (selectedDay) {
+            const selectedSlots = selectedDay.slots.find(({slot: selectedDaySlot}) => selectedDaySlot === slot);
+            console.log(selectedSlots, selectedDay.slots, slot)
+            if (selectedSlots) {
+                selectedSlotData.recipes = selectedSlots.recipes;
+            }
+        }
+        setSelectedSlot(selectedSlotData);
     }
 
+    const onSchedulePopupClose = (e, reason) => {
+        if (reason === 'backdropClick') return;
+        setIsSchedulePopupOpen(false);
+    }
+
+    const onScheduleFormSubmit = async e => {
+        e.preventDefault();
+        const data = extractFormData(e.target);
+        const recipes = [];
+        Object.keys(data.id).forEach(id => {
+            const item = {
+                number_of_people: data['number_of_people'][id] ? parseInt(data['number_of_people'][id]) : 1,
+                recipe_id: data['recipe_id'][id] ? parseInt(data['recipe_id'][id]) : null,
+            }
+            if (!id.startsWith('tmp_')) {
+                item.id = parseInt(id);
+            }
+            recipes.push(item);
+        });
+        try {
+            const { slot, day } = selectedSlot;
+            setIsLoading(true);
+            const { year, month } = selectedYearAndMonth;
+            const from = dayjs(new Date(year, month, 1)).format('YYYY-MM-DD');
+            const to = dayjs(new Date(year, month + 1, 0)).format('YYYY-MM-DD');
+            const {setRecipeSchedule: {response: {schedule}}} = await fetchData(
+                getSetRecipeScheduleMutation(),
+                {
+                    date: dayjs(day).format('YYYY-MM-DD'),
+                    slot,
+                    from,
+                    to,
+                    recipe_schedule: recipes
+                });
+            setSchedule(schedule);
+        } catch ({ category, message }) {
+            if (category === 'aborted') return;
+            toast.error(message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const onRecipeAdd = () => {
+        setSelectedSlot({
+            ...selectedSlot,
+            recipes: [
+                ...selectedSlot.recipes,
+                {
+                    id: `tmp_${new Date().getTime()}`
+                }
+            ]
+        });
+    }
+
+    const onRecipeEdit = (id, { model }) => {
+        const index = selectedSlot.recipes.map(item => item.id).indexOf(id);
+        const recipes = [...selectedSlot.recipes];
+        if (index !== -1) {
+            recipes[index] = {
+                ...recipes[index],
+                recipe: model
+            };
+        } else {
+            recipes.push({
+                id,
+                number_of_people: 1,
+                recipe: model
+            });
+        }
+        setSelectedSlot({
+            ...selectedSlot,
+            recipes
+        })
+    }
+
+    const onRecipeDelete = id => {
+        const index = selectedSlot.recipes.map(item => item.id).indexOf(id);
+        const recipes = [...selectedSlot.recipes];
+        if (index !== -1) {
+            recipes.splice(index, 1);
+        }
+        setSelectedSlot({
+            ...selectedSlot,
+            recipes
+        })
+    }
+
+    const onRecipeSearch = async query => {
+        const hits = await search('recipe', query);
+        return hits.map(hit => ({
+            value: hit.id,
+            label: ucwords(hit.name),
+            model: hit
+        }))
+    }
 
     return (
         <UserLayout>
             <Loader isLoading={isLoading} />
+            <Dialog open={isSchedulePopupOpen}
+                    onClose={onSchedulePopupClose}
+                    fullWidth
+                    maxWidth="sm"
+                    disableEscapeKeyDown={true}
+            >
+                <DialogTitle>
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                        {`${ucwords(selectedSlot.slot || '')} of ${dayjs(selectedSlot.day).format('dddd, MMMM D, YYYY')}`}
+                        <IconButton
+                            edge="end"
+                            color="inherit"
+                            onClick={onSchedulePopupClose}
+                            aria-label="close"
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+                </DialogTitle>
+                <Box component="form" onSubmit={onScheduleFormSubmit}>
+                    <DialogContent dividers>
+                        {
+                            selectedSlot.recipes?.map(recipe => {
+                                const id = recipe.id.toString();
+                                return (
+                                    <Box noValidate autoComplete="off" key={id}>
+                                        <input type="hidden" name={`id[${id}]`} value={recipe.id} />
+                                        <Box display="flex" gap={2} alignItems="center" mb={2} flexWrap="wrap">
+                                            <Box flex={1}>
+                                                {
+                                                    recipe?.recipe ? (
+                                                        <>
+                                                            <input type="hidden" name={`recipe_id[${id}]`} value={recipe?.recipe?.id} />
+                                                            <TextField
+                                                                label="Recipe"
+                                                                name={`name[${id}]`}
+                                                                type="text"
+                                                                value={ucwords(recipe?.recipe?.name || '')}
+                                                                fullWidth
+                                                                disabled={true}
+                                                                margin="normal"
+                                                            />
+                                                        </>
+                                                    ) : (
+                                                        <AsyncSelect
+                                                            label={'Recipe'}
+                                                            value={ucwords(recipe?.recipe?.name || '')}
+                                                            name={`name[${id}]`}
+                                                            onChange={(val) => onRecipeEdit(id, val)}
+                                                            fetchOptions={onRecipeSearch}
+                                                            initialOptions={[]}
+                                                            fullWidth
+                                                            margin="normal"
+                                                            autocomplete='off'
+                                                        />
+                                                    )
+                                                }
+                                            </Box>
+                                            <Box flex={1}>
+                                                <TextField
+                                                    label="People"
+                                                    name={`number_of_people[${id}]`}
+                                                    type="number"
+                                                    defaultValue={recipe?.number_of_people}
+                                                    fullWidth
+                                                    margin="normal"
+                                                />
+                                            </Box>
+                                            <Box flex={1}>
+                                                <IconButton
+                                                    onClick={() => {onRecipeDelete(id)}}
+                                                    aria-label="delete"
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                )
+                            })
+                        }
+                        <Button variant="outlined" onClick={onRecipeAdd}>
+                            Add Recipe
+                        </Button>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={onSchedulePopupClose}>Cancel</Button>
+                        <Button type="submit" variant="contained">Save</Button>
+                    </DialogActions>
+                </Box>
+            </Dialog>
             <Box
                 sx={{
                     display: 'flex',
@@ -194,8 +409,6 @@ const Schedule = props => {
                     )
                 })
             }
-
-            <Calendar />
         </UserLayout>
     );
 }

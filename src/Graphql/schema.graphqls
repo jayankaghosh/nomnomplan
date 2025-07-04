@@ -92,9 +92,7 @@ type Mutation {
 
   """Set recipe schedule for a specific date and slot"""
   setRecipeSchedule(
-    id: Int
-    recipe_id: Int!
-    number_of_people: Int!
+    recipe_schedule: [RecipeScheduleInput]!
     date: String!
     slot: RecipeScheduleSlotEnum!
   ): Query
@@ -104,6 +102,12 @@ type Mutation {
     id: Int!
   ): Query
   @resolver(class: "JayankaGhosh\\NomNomPlan\\Graphql\\Resolver\\DeleteRecipeSchedule")
+}
+
+input RecipeScheduleInput {
+  id: Int
+  recipe_id: Int!
+  number_of_people: Int!
 }
 
 input IngredientInput {
@@ -236,6 +240,7 @@ type RecipeList implements PaginatedList {
 type Recipe implements PaginatedListItem {
   id: Int!
   name: String
+  cost: Float
   ingredients: [RecipeIngredient]
   created_at: String!
   updated_at: String!

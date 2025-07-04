@@ -45,6 +45,13 @@ class Recipe
                 '[>]ingredient' => ['ingredient_id' => 'id']
             ]
         );
+        $cost = 0;
+        foreach ($ingredients as $ingredient) {
+            $ingredient['qty'] = (float)$ingredient['qty'];
+            $ingredient['unit_price'] = (float)$ingredient['unit_price'];
+            $cost += $ingredient['qty'] * $ingredient['unit_price'];
+        }
+        $recipe['cost'] = $cost;
         $recipe['ingredients'] = $ingredients;
         return $recipe;
     }

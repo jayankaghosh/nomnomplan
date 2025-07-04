@@ -76,6 +76,13 @@ class Table
         }
     }
 
+    public function rawDelete(array $where): void
+    {
+        if (count($where)) {
+            $this->db->getConnection()->delete($this->tableName, $where);
+        }
+    }
+
     private function processSelectArgs($where, $columns, $join): array
     {
         $args = [
