@@ -37,6 +37,7 @@ class Recipe
                 'ingredient.is_veg',
                 'ingredient.qty_unit',
                 'ingredient.unit_price',
+                'ingredient.keywords',
                 'ingredient.created_at',
                 'ingredient.updated_at',
                 'recipe_ingredient.ingredient_qty(qty)'

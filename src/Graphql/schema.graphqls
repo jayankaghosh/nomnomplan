@@ -116,12 +116,14 @@ input IngredientInput {
   is_veg: Boolean!
   qty_unit: String!
   unit_price: Float!
+  keywords: [String]!
 }
 
 input RecipeInput {
   id: Int
   name: String!
   ingredients: [RecipeIngredientInput]!
+  keywords: [String]!
 }
 
 input UserInput {

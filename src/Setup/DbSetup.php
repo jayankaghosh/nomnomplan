@@ -232,6 +232,10 @@ class DbSetup implements NonInterceptableInterface
                 "DECIMAL(10,2)",
                 "NOT NULL"
             ],
+            "keywords" => [
+                "TEXT",
+                "NOT NULL"
+            ],
             "created_at" => [
                 "DATETIME",
                 "NOT NULL",
@@ -258,6 +262,10 @@ class DbSetup implements NonInterceptableInterface
                 "VARCHAR(300)",
                 "NOT NULL",
                 "UNIQUE"
+            ],
+            "keywords" => [
+                "TEXT",
+                "NOT NULL"
             ],
             "created_at" => [
                 "DATETIME",

@@ -35,13 +35,16 @@ class AlgoliaIndex extends Command implements NonInterceptableInterface
             [
                 'name',
                 'qty_unit',
+                'keywords'
             ]
         );
         $this->indexByPage(
             'recipe',
             [
                 'name',
-                'ingredients.name'
+                'keywords',
+                'ingredients.name',
+                'ingredients.keywords'
             ],
             500,
             $this->prepareRecipe(...)
