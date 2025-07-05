@@ -2,9 +2,12 @@ import AdminLayout from "layout/admin";
 import { Box, Typography, Button, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import {ADMIN_DASHBOARD} from "pages/routes.config";
+import {useAdminGuard} from "util/hooks";
 
 
 const AdminNoRoute = props => {
+    useAdminGuard();
+
     const navigate = useNavigate();
     return (
         <AdminLayout>
