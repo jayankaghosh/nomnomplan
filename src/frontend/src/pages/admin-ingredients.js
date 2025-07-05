@@ -75,6 +75,17 @@ const AdminIngredients = props => {
                     required
                     inputProps={{ step: "0.01" }}
                 />
+                <TextField
+                    label="Keywords"
+                    name="keywords"
+                    multiline
+                    minRows={3}
+                    maxRows={6}
+                    fullWidth
+                    margin="normal"
+                    defaultValue={formValues['keywords']}
+                    required
+                />
             </>
         )
     }
@@ -92,7 +103,7 @@ const AdminIngredients = props => {
                 query={getIngredientListQuery}
                 innerQuery={_getIngredientsQuery}
                 queryName={'adminGetIngredients'}
-                columns={['id', 'name', 'is_veg', 'qty_unit', 'unit_price', 'created_at', 'updated_at']}
+                columns={['id', 'name', 'is_veg', 'qty_unit', 'unit_price', 'keywords', 'created_at', 'updated_at']}
                 rowMutator={ rowMutator }
                 AddNewItemForm={AddNewItemForm}
                 addNewItemQuery={getInsertOrUpdateIngredientMutation}

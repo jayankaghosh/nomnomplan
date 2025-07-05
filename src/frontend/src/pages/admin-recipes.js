@@ -69,6 +69,17 @@ const AdminRecipes = props => {
                     defaultValue={formValues['name']}
                     required
                 />
+                <TextField
+                    label="Keywords"
+                    name="keywords"
+                    multiline
+                    minRows={3}
+                    maxRows={6}
+                    fullWidth
+                    margin="normal"
+                    defaultValue={formValues['keywords']}
+                    required
+                />
                 <DynamicRowsInput
                     initialRows={initialIngredientRows}
                     title={'Ingredients'}
@@ -122,7 +133,7 @@ const AdminRecipes = props => {
                 query={getRecipeListQuery}
                 innerQuery={_getRecipesQuery}
                 queryName={'adminGetRecipes'}
-                columns={['id', 'name', 'ingredients', 'cost', 'created_at', 'updated_at']}
+                columns={['id', 'name', 'keywords', 'ingredients', 'cost', 'created_at', 'updated_at']}
                 rowMutator={ rowMutator }
                 columnRenderers={{ ingredients: ingredientsRenderer }}
                 AddNewItemForm={AddNewItemForm}

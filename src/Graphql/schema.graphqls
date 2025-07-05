@@ -227,6 +227,7 @@ type Ingredient implements PaginatedListItem {
   is_veg: String
   qty_unit: String
   unit_price: Float
+  keywords: String
   created_at: String!
   updated_at: String!
 }
@@ -243,6 +244,7 @@ type Recipe implements PaginatedListItem {
   id: Int!
   name: String
   cost: Float
+  keywords: String
   ingredients: [RecipeIngredient]
   created_at: String!
   updated_at: String!
@@ -273,6 +275,7 @@ type RecipeIngredient implements PaginatedListItem {
   qty_unit: String
   unit_price: Float
   qty: Float
+  keywords: String
   created_at: String!
   updated_at: String!
 }
