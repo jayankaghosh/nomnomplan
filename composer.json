@@ -11,7 +11,8 @@
         "symfony/console": "^6.4",
         "phpmailer/phpmailer": "^6.10",
         "ext-pdo": "*",
-        "algolia/algoliasearch-client-php": "^4.0"
+        "algolia/algoliasearch-client-php": "^4.0",
+        "symfony/http-foundation": "^6.4"
     },
     "autoload": {
         "psr-4": {

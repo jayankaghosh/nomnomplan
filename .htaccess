@@ -1,19 +1,16 @@
 RewriteEngine On
 RewriteBase /
 
-# --- 1. Route /graphql to PHP backend ---
-RewriteCond %{REQUEST_URI} ^/graphql$
-RewriteRule ^graphql$ index.php [QSA,L]
-
-# --- 2. Serve /assets/* directly ---
+# Serve /assets/* directly from the assets folder
 RewriteCond %{REQUEST_URI} ^/assets/
 RewriteRule ^assets/(.*)$ assets/$1 [L]
 
-# --- 3. Frontend files: rewrite requests to /src/frontend/build/$1 if file exists there ---
+# Deny access to hidden files like .htaccess, .env, etc.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Route everything else to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{DOCUMENT_ROOT}/src/frontend/build%{REQUEST_URI} -f
-RewriteRule ^(.*)$ src/frontend/build/$1 [L]
-
-# --- 4. Fallback to index.html (for React SPA routing) ---
-RewriteRule ^.*$ src/frontend/build/index.html [QSA,L]
+RewriteRule ^.*$ index.php [QSA,L]

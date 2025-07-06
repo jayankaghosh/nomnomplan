@@ -5,6 +5,8 @@ namespace JayankaGhosh\NomNomPlan;
 use JayankaGhosh\NomNomPlan\App\Cli;
 use JayankaGhosh\NomNomPlan\App\Graphql;
 use JayankaGhosh\NomNomPlan\Exception\ApplicationException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class App
 {
@@ -36,9 +38,19 @@ class App
         if (php_sapi_name() === 'cli') {
             $this->cli->run();
         } else {
-            $requestUri = trim(strtok($_SERVER['REQUEST_URI'] ?? '', '?'), '/');
-            if ($requestUri === 'graphql') {
+            $requestUri = '/' . trim(strtok($_SERVER['REQUEST_URI'] ?? '', '?'), '/');
+            if ($requestUri === '/graphql') {
                 $this->graphql->run();
+            } else if ($requestUri) {
+                $path = __DIR__ . '/frontend/build';
+                $file = $path . $requestUri;
+                if (!is_file($file)) {
+                    $file = $path . '/index.html';
+                }
+                $response = new BinaryFileResponse($file);
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, basename($file));
+                $response->send();
+                exit;
             } else {
                 throw new ApplicationException('URI Not supported');
             }
