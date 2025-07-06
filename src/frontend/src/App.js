@@ -47,6 +47,13 @@ function App() {
                         },
                     }),
             },
+            typography: {
+                fontFamily: [
+                    '"Roboto"',
+                    'Arial',
+                    'sans-serif',
+                ].join(','),
+            },
         }),
         [themeMode]
     );
