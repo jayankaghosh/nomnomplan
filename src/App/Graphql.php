@@ -9,6 +9,7 @@ use JayankaGhosh\NomNomPlan\Exception\AuthenticationException;
 use JayankaGhosh\NomNomPlan\Graphql\AdminResolverInterface;
 use JayankaGhosh\NomNomPlan\Graphql\ResolverInterface;
 use JayankaGhosh\NomNomPlan\Model\TableFactory;
+use JayankaGhosh\NomNomPlan\Util\Headers;
 use Om\ObjectManager\ObjectManager;
 
 class Graphql implements AppInterface
@@ -17,7 +18,8 @@ class Graphql implements AppInterface
     const SCHEMA_PATH = __DIR__ . '/../Graphql/schema.graphqls';
 
     public function __construct(
-        private readonly TableFactory $tableFactory
+        private readonly TableFactory $tableFactory,
+        private readonly Headers $headersUtil,
     )
     {
     }
@@ -82,13 +84,13 @@ class Graphql implements AppInterface
     {
         $adminTokenTable = $this->tableFactory->create(['tableName' => 'admin_token']);
         $adminTable = $this->tableFactory->create(['tableName' => 'admin_user']);
-        $adminToken = getallheaders()['Admin-Token'] ?? null;
+        $adminToken = $this->headersUtil->getHeader( 'Admin-Token');
         $adminTokenModel = $adminTokenTable->load('token', $adminToken);
         $admin = $adminTokenModel ? $adminTable->load('id', $adminTokenModel['admin_id']) : null;
 
         $userTokenTable = $this->tableFactory->create(['tableName' => 'user_token']);
         $userTable = $this->tableFactory->create(['tableName' => 'user']);
-        $userToken = getallheaders()['Token'] ?? null;
+        $userToken = $this->headersUtil->getHeader( 'Token');
         $userTokenModel = $userTokenTable->load('token', $userToken);
         $user = $userTokenModel ? $userTable->load('id', $userTokenModel['user_id']) : null;
 
@@ -102,7 +104,7 @@ class Graphql implements AppInterface
     {
         if ($resolver instanceof AdminResolverInterface) {
             $adminTokenTable = $this->tableFactory->create(['tableName' => 'admin_token']);
-            $adminToken = getallheaders()['Admin-Token'] ?? null;
+            $adminToken = $this->headersUtil->getHeader( 'Admin-Token');
             if (!$adminTokenTable->load('token', $adminToken)) {
                 throw new AuthenticationException('Authentication error');
             }
